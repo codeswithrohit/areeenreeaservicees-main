@@ -9,8 +9,21 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {FaMapMarkerAlt, FaInfoCircle, FaTags, FaConciergeBell, FaStar,FaCheckCircle, FaBed } from "react-icons/fa"
+import {FaMapMarkerAlt, FaInfoCircle, FaTags, FaConciergeBell, FaStar,FaCheckCircle, FaBed,FaRegStar } from "react-icons/fa"
+
+import Modal from 'react-modal';
 const HotelDetailsViewCard = () => {
+  const [reviews, setReviews] = useState([]);
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
+  const [rating, setRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [ratingsCount, setRatingsCount] = useState({});
+
+
+
+
   const [selectedRoomType, setSelectedRoomType] = useState(null);
   const [pgdetaildata, setPgdetaildata] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -34,15 +47,19 @@ const HotelDetailsViewCard = () => {
 
     pgRef.get().then((doc) => {
       if (doc.exists) {
-        setPgdetaildata(doc.data());
-        if (doc.data().roomTypes?.length > 0) {
-          setSelectedRoomType(doc.data().roomTypes[0]);
+        const pgData = doc.data(); // Store the Firestore data in a variable
+        setPgdetaildata(pgData);
+        setReviews(pgData.reviews || []); // Use pgData for reviews
+        calculateRatings(pgData.reviews || []); // Use pgData for calculating ratings
+        if (pgData.roomTypes?.length > 0) {
+          setSelectedRoomType(pgData.roomTypes[0]);
         }
       } else {
         console.log('Document not found!');
       }
       setIsLoading(false);
     });
+    
   }, []);
 
   const scrollToSection = (ref, tabName) => {
@@ -50,6 +67,62 @@ const HotelDetailsViewCard = () => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const calculateRatings = (reviews) => {
+    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let totalRatingSum = 0;
+
+    reviews.forEach((review) => {
+      counts[review.rating] += 1;
+      totalRatingSum += review.rating;
+    });
+
+    setRatingsCount(counts);
+    setAverageRating(reviews.length > 0 ? (totalRatingSum / reviews.length).toFixed(1) : 0);
+  };
+
+  const handleSubmitReview = async () => {
+    if (!name || !message || !rating) {
+      toast.error("Please fill out all fields and select a rating.");
+      return;
+    }
+
+    const newReview = {
+      name,
+      message,
+      rating,
+      date: moment().format('YYYY-MM-DD'),
+    };
+
+    try {
+      const pgId = router.query.id;
+      if (!pgId) return;
+
+      const pgRef = firebase.firestore().collection('pgdetail').doc(pgId);
+      await pgRef.update({
+        reviews: firebase.firestore.FieldValue.arrayUnion(newReview),
+      });
+
+      setReviews((prev) => [...prev, newReview]);
+      calculateRatings([...reviews, newReview]);
+      setReviewModalVisible(false);
+      toast.success("Review submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit the review.");
+    }
+  };
+
+  const renderStars = (count) => (
+    <div className="flex items-center space-x-1">
+      {Array.from({ length: count }).map((_, idx) => (
+        <FaStar key={idx} className="text-orange-500" />
+      ))}
+      {Array.from({ length: 5 - count }).map((_, idx) => (
+        <FaRegStar key={idx} className="text-gray-400" />
+      ))}
+    </div>
+  );
+  
   return (
     <div className="py-6 bg-gray-50 min-h-screen">
     {/* Fixed Top Section */}
@@ -244,120 +317,74 @@ const HotelDetailsViewCard = () => {
   
         <div ref={reviewsRef}>
           <div className='bg-black' >
-        <div class="px-4 py-4 mt-8 ">
-                        
+          <div className="my-6 p-4">
+            <h2 className="text-2xl font-bold">Reviews</h2>
+            <button
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() => setReviewModalVisible(true)}
+            >
+              Submit Your Review
+            </button>
+            
 
-                            <div class="mt-8">
-                                <h3 class="text-xl font-semibold text-white">Reviews(10)</h3>
-
-                                <div class="space-y-3 mt-4">
-                                    <div class="flex items-center">
-                                        <p class="text-sm text-white font-semibold">5.0</p>
-                                        <svg class="w-5 fill-yellow-300 ml-1" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <div class="bg-gray-400 rounded w-full h-2 ml-3">
-                                            <div class="w-2/3 h-full rounded bg-yellow-300"></div>
-                                        </div>
-                                        <p class="text-sm text-white font-semibold ml-3">66%</p>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <p class="text-sm text-white font-semibold">4.0</p>
-                                        <svg class="w-5 fill-yellow-300 ml-1" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <div class="bg-gray-400 rounded w-full h-2 ml-3">
-                                            <div class="w-1/3 h-full rounded bg-yellow-300"></div>
-                                        </div>
-                                        <p class="text-sm text-white font-semibold ml-3">33%</p>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <p class="text-sm text-white font-semibold">3.0</p>
-                                        <svg class="w-5 fill-yellow-300 ml-1" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <div class="bg-gray-400 rounded w-full h-2 ml-3">
-                                            <div class="w-1/6 h-full rounded bg-yellow-300"></div>
-                                        </div>
-                                        <p class="text-sm text-white font-semibold ml-3">16%</p>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <p class="text-sm text-white font-semibold">2.0</p>
-                                        <svg class="w-5 fill-yellow-300 ml-1" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <div class="bg-gray-400 rounded w-full h-2 ml-3">
-                                            <div class="w-1/12 h-full rounded bg-yellow-300"></div>
-                                        </div>
-                                        <p class="text-sm text-white font-semibold ml-3">8%</p>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <p class="text-sm text-white font-semibold">1.0</p>
-                                        <svg class="w-5 fill-yellow-300 ml-1" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <div class="bg-gray-400 rounded w-full h-2 ml-3">
-                                            <div class="w-[6%] h-full rounded bg-yellow-300"></div>
-                                        </div>
-                                        <p class="text-sm text-white font-semibold ml-3">6%</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start mt-8">
-                                <img src="https://readymadeui.com/team-2.webp" class="w-12 h-12 rounded-full border-2 border-white" />
-
+            {reviews.map((review, idx) => (
+            <div key={idx} class="flex items-start mt-8 p-4">
+                                <img src="https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg" class="w-12 h-12 rounded-full border-2 border-white" />
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-semibold text-white">John Doe</h4>
-                                    <div class="flex space-x-1 mt-1">
-                                        <svg class="w-4 fill-yellow-300" viewBox="0 0 14 13" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <svg class="w-4 fill-yellow-300" viewBox="0 0 14 13" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <svg class="w-4 fill-yellow-300" viewBox="0 0 14 13" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <svg class="w-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <svg class="w-4 fill-[#CED5D8]" viewBox="0 0 14 13" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M7 0L9.4687 3.60213L13.6574 4.83688L10.9944 8.29787L11.1145 12.6631L7 11.2L2.8855 12.6631L3.00556 8.29787L0.342604 4.83688L4.5313 3.60213L7 0Z" />
-                                        </svg>
-                                        <p class="text-xs !ml-2 font-semibold text-white">2 mins ago</p>
-                                    </div>
-                                    <p class="text-xs mt-4 text-white">The service was amazing. I never had to wait that long for my food. The staff was friendly and attentive, and the delivery was impressively prompt.</p>
+                                    <h4 class="text-sm font-bold text-white">{review.name}</h4>
+                                    <p>{renderStars(review.rating)}</p>
+                                    <p class="text-xs text-white mt-1">{review.message}</p>
                                 </div>
                             </div>
-
-                            <button type="button" class="w-full mt-8 px-4 py-2.5 bg-transparent border border-yellow-300 text-yellow-300 font-semibold rounded">Read all reviews</button>
-                        </div>
-                    </div>
+                                 ))}
+          </div>
+               </div>
                     </div>
                 </div>
         
       
     )}
+
+<Modal
+        isOpen={reviewModalVisible}
+        onRequestClose={() => setReviewModalVisible(false)}
+        contentLabel="Submit Review"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto"
+        overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-4">Submit Your Review</h2>
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border p-2 mb-4 rounded"
+        />
+        <textarea
+          placeholder="Your Review"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full border p-2 mb-4 rounded"
+        ></textarea>
+        <div className="mb-4">
+          <span className="font-bold">Rating:</span>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              className={`inline text-xl cursor-pointer ${
+                star <= rating ? "text-orange-500" : "text-gray-400"
+              }`}
+              onClick={() => setRating(star)}
+            />
+          ))}
+        </div>
+        <button
+          className="w-full bg-blue-600 text-white p-2 rounded"
+          onClick={handleSubmitReview}
+        >
+          Submit
+        </button>
+      </Modal>
     <ToastContainer />
   </div>
   
