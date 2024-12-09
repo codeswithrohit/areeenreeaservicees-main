@@ -111,29 +111,32 @@ const ExploreProperties = () => {
             </p>
             <h1 className="text-4xl font-extrabold text-gray-900">Recommended for You</h1>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {[
-              { label: 'All', value: 'All' },
-              { label: 'ARENE PG', value: 'pgdetail' },
-              { label: 'BUY PROPERTY', value: 'buydetail' },
-              { label: 'RENT PROPERTY', value: 'rentdetail' },
-              { label: 'ARENE HOTELS', value: 'Hoteldetail' },
-              { label: 'BANQUET HALL', value: 'Banqueethalldetail' },
-              { label: 'ARENE RESORT', value: 'Resortdetail' },
-            ].map((category) => (
-              <button
-                key={category.value}
-                onClick={() => setSelectedCategory(category.value)}
-                className={`px-6 py-2 rounded-full text-sm font-medium ${
-                  selectedCategory === category.value
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                } hover:bg-teal-500 hover:text-white transition`}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
+          <div className="flex gap-4 mb-8 overflow-x-auto whitespace-nowrap justify-center lg:justify-center">
+  {[
+    { label: 'All', value: 'All' },
+    { label: 'ARENE PG', value: 'pgdetail' },
+    { label: 'BUY PROPERTY', value: 'buydetail' },
+    { label: 'RENT PROPERTY', value: 'rentdetail' },
+    { label: 'ARENE HOTELS', value: 'Hoteldetail' },
+    { label: 'BANQUET HALL', value: 'Banqueethalldetail' },
+    { label: 'ARENE RESORT', value: 'Resortdetail' },
+  ].map((category) => (
+    <button
+      key={category.value}
+      onClick={() => setSelectedCategory(category.value)}
+      className={`md:px-6 md:py-2 px-2 py-2 rounded-md mb-4 text-xs md:text-sm font-medium ${
+        selectedCategory === category.value
+          ? 'bg-teal-600 text-white'
+          : 'bg-gray-200 text-gray-700'
+      } hover:bg-teal-500 hover:text-white transition`}
+    >
+      {category.label}
+    </button>
+  ))}
+</div>
+
+
+
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <div className="loader border-t-4 border-teal-500 rounded-full w-10 h-10 animate-spin"></div>
