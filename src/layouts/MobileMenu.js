@@ -81,7 +81,7 @@ const MobileMenu = () => {
   return (
     <header className="header-area header-area-one d-xl-none mb-36 ">
     
-      <div className="header-navigation sticky breakpoint-on">
+      <div className="header-navigation  breakpoint-on">
         <div className="container-fluid">
           <div className="primary-menu">
             <div className="row">

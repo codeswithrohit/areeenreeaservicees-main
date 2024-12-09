@@ -246,7 +246,7 @@ const HomeTab = () => {
   <div className="relative z-10 max-w-[90%] lg:max-w-[85%] mx-auto grid place-content-center h-full">
     <div className="grid grid-cols-1 lg:grid-cols-1 md:grid-cols-1 gap-8 place-content-center">
       <div>
-        <h1 className='text-4xl font-bold font-mono text-center text-pink-600 mt-8'> Discover your perfect stay around the India</h1>
+        <h1 className='md:text-4xl text-xl font-bold font-mono text-center text-pink-600 mt-2'> Discover your perfect stay around the India</h1>
         <div className="flex justify-center">
       <h2 className="text-xl flex items-center space-x-2">
         <FaMapMarkerAlt className="text-red-500" />
@@ -256,8 +256,8 @@ const HomeTab = () => {
       </div>
       <div>
       <div>
-      <div role="tablist" className="grid grid-cols-2 -mt-4  md:grid-cols-4 lg:grid-cols-8 border-b border-gray-300">
-        {/* Tab Buttons */}
+      {/* <div role="tablist" className="grid grid-cols-2 -mt-4  md:grid-cols-4 lg:grid-cols-8 border-b border-gray-300">
+       
         <button
           className={`flex-1 p-1 text-xs font-mono font-bold text-center ${activeTab === 'tab1' ? 'bg-[#43d3b1] text-white' : 'bg-gray-200 text-gray-700'}`}
           onClick={() => handleTabChange('tab1')}
@@ -306,11 +306,11 @@ const HomeTab = () => {
         >
           ARENE CHEF
         </button>
-      </div>
+      </div> */}
 
 
       {/* Tab Panels */}
-      <div role="tabpanel" className={`tab-content ${activeTab === 'tab1' ? 'block' : 'hidden'} bg-base-100 border-base-300 rounded-b-md p-4`}>
+      {/* <div role="tabpanel" className={`tab-content ${activeTab === 'tab1' ? 'block' : 'hidden'} bg-base-100 border-base-300 rounded-b-md p-4`}>
         <div className="grid gap-2 grid-cols-1">
           <select  value={category}
               onChange={handleCategoryChange}
@@ -465,16 +465,15 @@ const HomeTab = () => {
           </select>
           <button onClick={handleResortSearch} className="bg-[#43d3b1] p-2 rounded-btn text-white text-xs">Search</button>
         </div>
-      </div>
+      </div> */}
 
-      <div role="tabpanel" className={`tab-content ${activeTab === 'tab7' ? 'block' : 'hidden'} bg-base-100 border-base-300 rounded-b-md p-4`}>
+      {/* <div role="tabpanel" className={`tab-content ${activeTab === 'tab7' ? 'block' : 'hidden'} bg-base-100 border-base-300 rounded-b-md p-4`}>
         <div className="grid gap-2 grid-cols-1">
           <select  name="service"
         value={services}
        onChange={handleServiceChange}
         required className="border-b-2 border-[#43d3b1] text-xs p-1">
          <option value="">Select Service</option>
-        {/* Replace this with your list of services */}
         <option value="Iron and Fold">Iron & Fold</option>
         <option value="Wash and Iron">Wash & Iron</option>
         <option value="Wash and Fold">Wash & Fold</option>
@@ -509,7 +508,7 @@ const HomeTab = () => {
          
           <button  onClick={handleCloudKitchenSearch} className="bg-[#43d3b1] p-2 rounded-btn text-white text-xs">Search</button>
         </div>
-      </div>
+      </div> */}
 
 
     </div>
