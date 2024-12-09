@@ -26,28 +26,7 @@ const Billing = () => {
   
         snapshot.forEach((doc) => {
           const data = doc.data();
-          console.log("Data", data);
-  
-          // Parse checkInDate with explicit format
-          const checkInDate = dayjs(data.bookingDate.checkInDate, 'DD-MM-YYYY');
-  
-          // Calculate checkOutDate based on paymentOption
-          let checkOutDate;
-          if (data.paymentOption === 'oneday') {
-            checkOutDate = checkInDate.add(1, 'day').format('DD-MM-YYYY');
-          } else if (data.paymentOption === 'threeday') {
-            checkOutDate = checkInDate.add(3, 'days').format('DD-MM-YYYY');
-          } else if (data.paymentOption === 'allday') {
-            checkOutDate = checkInDate.add(1, 'month').format('DD-MM-YYYY');
-          }
-  
-          // Add checkOutDate to bookingDate object
-          data.checkOutDate = checkOutDate;
-  
-          // Add an expired field based on current date
-          const currentDate = dayjs().format('DD-MM-YYYY');
-          data.isExpired = dayjs(currentDate, 'DD-MM-YYYY').isAfter(dayjs(checkOutDate, 'DD-MM-YYYY'));
-  
+   
           setBookingData(data);
         });
   
@@ -179,7 +158,7 @@ const Billing = () => {
 
               <dl className="grid sm:flex gap-x-3 text-sm">
                 <dt className="min-w-36 max-w-[200px] text-gray-500">Check In Between:</dt>
-                <dd className="font-medium text-gray-800 dark:text-gray-200">{bookingData.bookingDate.checkInDate} to {bookingData.checkOutDate} {bookingData.bookingDate.checkOutDate}</dd>
+                <dd className="font-medium text-gray-800 dark:text-gray-200">{bookingData.checkInDate} to {bookingData.checkOutDate} </dd>
               </dl>
               {/* {bookingData.bookingDate.checkOutDate && (
   <dl className="grid sm:flex gap-x-3 text-sm">
@@ -228,10 +207,10 @@ const Billing = () => {
                 <td className="px-3 py-2 whitespace-nowrap">{bookingData.roomType}</td>
                 <td className="px-3 py-2 whitespace-nowrap">{bookingData.Location}</td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                ₹{bookingData.roomprice}
+                ₹{bookingData.roomprice}*{bookingData.totalDays} Days
 </td>
 
-                <td className="px-3 py-2 text-right whitespace-nowrap">₹{bookingData.Payment}</td>
+                <td className="px-3 py-2 text-right whitespace-nowrap">₹{bookingData.amountpaid}</td>
               </tr>
             </tbody>
           </table>
@@ -249,7 +228,7 @@ const Billing = () => {
 
               <dl className="grid sm:grid-cols-5 gap-x-3 text-sm">
                 <dt className="col-span-3 text-gray-500">Amount paid:</dt>
-                <dd className="col-span-2 font-medium text-gray-800 dark:text-gray-200">₹{bookingData.Payment}</dd>
+                <dd className="col-span-2 font-medium text-gray-800 dark:text-gray-200">₹{bookingData.amountpaid}</dd>
               </dl>
               <dl className="grid sm:grid-cols-5 gap-x-3 text-sm">
   <dt className="col-span-3 text-gray-500">Saving:</dt>

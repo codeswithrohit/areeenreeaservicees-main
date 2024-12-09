@@ -7,10 +7,9 @@ import moment from 'moment';
 import { MdAttachMoney } from 'react-icons/md';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { DatePicker } from 'antd';
 import {FaMapMarkerAlt, FaInfoCircle, FaTags, FaConciergeBell, FaStar,FaCheckCircle, FaBed,FaRegStar } from "react-icons/fa"
-
+import Select from 'react-select';
 import Modal from 'react-modal';
 const HotelDetailsViewCard = () => {
   const [reviews, setReviews] = useState([]);
@@ -21,8 +20,13 @@ const HotelDetailsViewCard = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [ratingsCount, setRatingsCount] = useState({});
 
-
-
+  const [dateRange, setDateRange] = useState({
+    startDate: null,
+    endDate: null
+  });
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   const [selectedRoomType, setSelectedRoomType] = useState(null);
   const [pgdetaildata, setPgdetaildata] = useState({});
@@ -79,7 +83,38 @@ const HotelDetailsViewCard = () => {
     setRatingsCount(counts);
     setAverageRating(reviews.length > 0 ? (totalRatingSum / reviews.length).toFixed(1) : 0);
   };
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        fetchUserData(authUser.uid);
+      } else {
+        setUser(null);
+        setUserData(null);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
+  const fetchUserData = async (uid) => {
+    try {
+      const userDoc = await firebase
+        .firestore()
+        .collection("Users")
+        .doc(uid)
+        .get();
+      if (userDoc.exists) {
+        const fetchedUserData = userDoc.data();
+        setUserData(fetchedUserData);
+        setName(fetchedUserData?.name || "");
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setIsLoading(false);
+    }
+  };
   const handleSubmitReview = async () => {
     if (!name || !message || !rating) {
       toast.error("Please fill out all fields and select a rating.");
@@ -122,7 +157,61 @@ const HotelDetailsViewCard = () => {
       ))}
     </div>
   );
-  
+
+
+  const handleCheckInChange = (date, dateString) => {
+    setDateRange({
+      ...dateRange,
+      startDate: date.toDate(), // Convert dayjs object to JavaScript Date object
+    });
+  };
+  console.log("check in date",dateRange.startDate)
+
+
+  const handleRoomTypeSelect = (room) => {
+    setSelectedRoomType(room);  // Update the selected room type in state
+    console.log("Selected Room Type:", room);  // You can remove this later
+  };
+  const handleRoomSelect = (selectedValue) => {
+    const room = roomOptions.find((option) => option.value === selectedValue);
+    setSelectedRoom(room);
+    console.log("Selected Room:", room);
+  };
+  const handleConfirmBooking = () => {
+    if (selectedRoom && dateRange.startDate) {
+      const formattedDate = moment(dateRange.startDate).format('DD-MM-YYYY');
+      router.push({
+        pathname: '/booking',
+        query: {
+          Name: pgdetaildata.PGName,
+          Agentid: pgdetaildata.AgentId,
+          location: pgdetaildata.location,
+          roomType: selectedRoom.type,
+          roomprice: selectedRoom.price,
+          checkInDate: formattedDate // Ensure date is in dd-MM-yyyy format
+        }
+      });
+    } else {
+      toast.error('Please select a room type and check-in date');
+    }
+  };
+
+
+console.log("selected room",selectedRoom)
+  const roomOptions = pgdetaildata.roomTypes ? pgdetaildata.roomTypes.map((room) => ({
+    value: room.type,
+    label: `${room.type} - ${room.price} INR -${room.availability} Aval.`,
+    type: room.type,
+    price: room.price,
+    availability: room.availability
+  })) : [];
+  const disabledDate = (current) => {
+    const today = moment();
+    const nextMonth = moment().add(1, 'month');
+    return current < today || current > nextMonth;
+  };
+
+ 
   return (
     <div className="py-6 bg-gray-50 min-h-screen">
     {/* Fixed Top Section */}
@@ -135,46 +224,58 @@ const HotelDetailsViewCard = () => {
       </div>
     ) : (
       <div className="container mx-auto bg-white shadow-xl rounded-lg p-4">
-<div className="sticky top-10 z-50 bg-emerald-500 shadow-lg rounded-lg p-2">
+<div className="fixed bottom-0 left-0 z-50 w-full bg-emerald-500 shadow-lg rounded-t-lg p-4">
   <div className="flex flex-wrap justify-start gap-6">
-
     {/* Check-in Date Input */}
-    <div className="flex flex-col gap-2 w-full sm:w-96">
+    {/* <div className="flex flex-col gap-2 w-full sm:w-96">
       <DatePicker
-        selected={checkinDate}
-        onChange={(date) => setCheckinDate(date)}
-        placeholderText="Select a check-in date"
+        onChange={handleCheckInChange}
+          placeholder="Check-in Date"
+          disabledDate={disabledDate}
         className="w-full h-12 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
       />
-    </div>
+    </div> */}
+    <div className="flex flex-col gap-2 w-full sm:w-96">
+                <DatePicker
+                  onChange={handleCheckInChange}
+                  format="YYYY-MM-DD"
+                  placeholder="Check-in Date"
+                  style={{ width: '100%' }}
+                  disabledDate={disabledDate}
+                          className="w-full h-12 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                />
+              </div>
 
     {/* Room Selection */}
     <div className="flex flex-col gap-2 w-full sm:w-96">
-      <select
-        id="room-select"
-        value={room}
-        onChange={(e) => setRoom(e.target.value)}
-        className="w-full h-12 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+    <select
+        onChange={(e) => handleRoomSelect(e.target.value)}
+        className="w-full h-12 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+        defaultValue=""
       >
-        <option value="" disabled>Select number of rooms</option>
-        <option value="1">1 Room</option>
-        <option value="2">2 Rooms</option>
-        <option value="3">3 Rooms</option>
-        <option value="4">4 Rooms</option>
+        <option value="" disabled>
+          Select Room Type
+        </option>
+        {roomOptions.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
-    </div>
+</div>
+
 
     {/* Confirm Button */}
     <div className="flex flex-col gap-2 w-full sm:w-96">
-      <button
+      <button   onClick={handleConfirmBooking}
         className="w-full h-12 text-lg font-medium text-white bg-gradient-to-r from-[#f27121] via-[#e94057] to-[#8a2387] rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300"
       >
         Book Now
       </button>
     </div>
-    
   </div>
 </div>
+
 
 
 
@@ -328,10 +429,10 @@ const HotelDetailsViewCard = () => {
             
 
             {reviews.map((review, idx) => (
-            <div key={idx} class="flex items-start mt-8 p-4">
+            <div key={idx} class="flex items-start mt-2 px-4 py-2">
                                 <img src="https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg" class="w-12 h-12 rounded-full border-2 border-white" />
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-bold text-white">{review.name}</h4>
+                                    <h4 class="text-sm font-bold text-white">{review.name} ({review.date}) </h4>
                                     <p>{renderStars(review.rating)}</p>
                                     <p class="text-xs text-white mt-1">{review.message}</p>
                                 </div>

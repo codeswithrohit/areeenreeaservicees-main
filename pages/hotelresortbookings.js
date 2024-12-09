@@ -11,10 +11,8 @@ dayjs.extend(customParseFormat);
 
 const Booking = () => {
   const router = useRouter();
-  const moment = require('moment');
   const [phoneNumber, setPhoneNumber] = useState("");
   const [name, setName] = useState("");
-  const [paymentOption, setPaymentOption] = useState("allday");
   const [email, setEmail] = useState("");
   const [userData, setUserData] = useState(null);
   const [mobilenumber, setMobileNumber] = useState("");
@@ -22,7 +20,7 @@ const Booking = () => {
   const [includeDonation, setIncludeDonation] = useState(true);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const { Name, roomType, roomprice, Agentid, location, checkInDate } = router.query;
+  const { Name,  roomType, roomprice, Agentid, location,checkInDate,checkOutDate,totalPrice,totalDays } = router.query;
   const [couponCode, setCouponCode] = useState("");
   const [couponData, setCouponData] = useState([]);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -114,47 +112,47 @@ const Booking = () => {
       });
   }, []);
 
-  const applyCoupon = () => {
-    console.log('Applying coupon:', couponCode); // Log coupon code
+  const applyCoupon = (couponCode) => {
+    console.log('Applying coupon:', couponCode);
 
-    // Check if couponData is loaded
     if (!couponData || couponData.length === 0) {
-        console.log('Coupons are not loaded yet.');
-        toast.warn('Coupons are not loaded yet. Please wait.', { position: toast.POSITION.TOP_RIGHT });
-        return;
+      console.log('Coupons are not loaded yet.');
+      toast.error('Coupons are not loaded yet. Please wait.');
+      return getPaymentAmount();
     }
 
-    // Find the coupon based on the entered coupon code
     const coupon = couponData.find((coupon) => coupon.code === couponCode);
     console.log('Found coupon:', coupon);
 
     if (coupon) {
-        const currentDate = moment().format('YYYY-MM-DD');
-        const expiryDate = moment(coupon.expirydate).format('YYYY-MM-DD');
-        console.log('Current date:', currentDate);
-        console.log('Coupon expiry date:', expiryDate);
+      const currentDate = dayjs().format('YYYY-MM-DD');
+      const expiryDate = dayjs(coupon.expirydate).format('YYYY-MM-DD');
+      console.log('Current date:', currentDate);
+      console.log('Coupon expiry date:', expiryDate);
 
-        if (moment(currentDate).isBefore(expiryDate) || moment(currentDate).isSame(expiryDate, 'day')) {
-            const discountAmount = parseFloat(coupon.price); // Assuming coupon.price is the fixed discount amount
-            let basePrice = getBasePrice(); // Create a function to get base price based on paymentOption
-            const discountedPrice = basePrice - discountAmount;
+      if (dayjs(currentDate).isBefore(expiryDate) || dayjs(currentDate).isSame(expiryDate, 'day')) {
+        const discountAmount = parseFloat(coupon.price);
+        const basePrice = getPaymentAmount().paymentAmount;
+        const discountedPrice = basePrice - discountAmount;
 
-            console.log('Base price:', basePrice);
-            console.log('Discount amount:', discountAmount);
-            console.log('Discounted price:', discountedPrice);
+        console.log('Base price:', basePrice);
+        console.log('Discount amount:', discountAmount);
+        console.log('Discounted price:', discountedPrice);
 
-            setAppliedCoupon(coupon);
-            setSavings(discountAmount);
-            toast.success(`Coupon ${coupon.code} applied successfully! You saved $${discountAmount}.`, { position: toast.POSITION.TOP_RIGHT });
-        } else {
-            console.log('Coupon has expired.');
-            toast.error(`Coupon ${coupon.code} has expired!`, { position: toast.POSITION.TOP_RIGHT });
-        }
+        setAppliedCoupon(coupon);
+        setSavings(discountAmount);
+        toast.success(`Coupon ${coupon.code} applied successfully!`);
+        return discountedPrice;
+      } else {
+        console.log('Coupon has expired.');
+        toast.error(`Coupon ${coupon.code} has expired!`);
+      }
     } else {
-        console.log('Invalid coupon code.');
-        toast.error('Invalid coupon code!', { position: toast.POSITION.TOP_RIGHT });
+      console.log('Invalid coupon code.');
+      toast.error('Invalid coupon code!');
     }
-};
+    return getPaymentAmount().paymentAmount;
+  };
 
   const submitBookingData = async (paymentAmount, total, payAtCheckIn) => {
     try {
@@ -167,24 +165,25 @@ const Booking = () => {
         address: address,
         phoneNumber: mobilenumber,
         email: email,
+        roomprice: roomprice || "",
+        totalPrice: totalPrice || "",
+        savings: savings || "",
+        includeDonation: includeDonation || "",
+        amountpaid: paymentAmount || "",
+        payAtCheckIn: payAtCheckIn || "",
+        Totalpayment: total || "",        
         Propertyname: Name,
         Location: location,
         roomType: roomType,
-        savings:savings,
-        roomprice: roomprice,
+        totalDays:totalDays,
         Agentid: Agentid,
         Userid: user.uid,
         OrderDate: currentDate,
-        Totalpayment: total,
-        payAtCheckIn: payAtCheckIn,
-        Payment: paymentAmount,
-        totalpayment: roomprice,
-        bookingDate: {
-          checkInDate: checkInDate,
-        },
+        checkInDate: checkInDate,
+        checkOutDate:checkOutDate
       });
       setLoading(false);
-      router.push(`/bookingdetails?orderId=${orderId}`);
+      router.push(`/hotelresortbookingdetails?orderId=${orderId}`);
       toast.success('Booking Successful!');
     } catch (error) {
       console.error('Error submitting booking data:', error);
@@ -259,13 +258,15 @@ const Booking = () => {
     }
   };
 
-  const getPaymentAmount = () => {
+  const arenecharge =totalDays*100
+  const totalprice = roomprice*totalDays
+
+
+const getPaymentAmount = () => {
     // Increase the base amount by 15%
-    const roomprices = parseFloat(roomprice);
-    const ownercharge = roomprices*0.05;
-    const usercharge = roomprices*0.1;
-    // Calculate 20% of the increased base amount
-    let paymentAmount = ownercharge + usercharge;
+    const roomprices = parseFloat(roomprice)*totalDays;
+    const arenecharges = parseFloat(arenecharge);
+    let paymentAmount =  arenecharges;
   
     if (includeDonation) {
       paymentAmount += 1; // Add 1 to paymentAmount if donation is included
@@ -276,12 +277,12 @@ const Booking = () => {
     // Ensure the final paymentAmount is an integer and meets the minimum value requirement
     const roundedPaymentAmount = Math.max(Math.round(finalPaymentAmount), 100);
     // Recalculate pay-at-check-in after applying savings and donation
-    const payAtCheckIn = roomprice - ownercharge;
+    const payAtCheckIn = roomprices ;
     // The total should be the base amount, as it includes both payment and pay-at-check-in
     const total = paymentAmount + payAtCheckIn;
 
  
-    return { paymentAmount: roundedPaymentAmount, payAtCheckIn, total,usercharge };
+    return { paymentAmount: roundedPaymentAmount, payAtCheckIn, total };
   };
   
   
@@ -295,37 +296,40 @@ const Booking = () => {
         return roomprice; // Fallback to room price
     }
 };
+  
+const moment = require('moment'); // Ensure moment is imported
 const getDateRange = (option) => {
-  const checkIn = moment(checkInDate, 'DD-MM-YYYY'); // Parse checkInDate with moment
-  const checkInFormatted = checkIn.format('DD-MM-YYYY'); // Format checkInDate
-  let startDate = checkInFormatted; // Start date is the same as checkInDate
-  let endDate = '';
+    const checkIn = moment(checkInDate, 'DD-MM-YYYY'); // Parse checkInDate with moment
+    const checkInFormatted = checkIn.format('DD-MM-YYYY'); // Format checkInDate
+    let startDate = checkInFormatted; // Start date is the same as checkInDate
+    let endDate = '';
 
-  console.log("startdate", startDate); // Log start date in DD-MM-YYYY format
+    console.log("startdate", startDate); // Log start date in DD-MM-YYYY format
 
-  if (option === 'oneday') {
-      const nextDay = checkIn.clone().add(1, 'day');
-      endDate = nextDay.format('DD-MM-YYYY');
-      console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
-      return `Check-in between ${startDate} to ${endDate}`;
-  }
+    if (option === 'oneday') {
+        const nextDay = checkIn.clone().add(1, 'day');
+        endDate = nextDay.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
+    }
 
-  if (option === 'threeday') {
-      const threeDaysLater = checkIn.clone().add(3, 'day');
-      endDate = threeDaysLater.format('DD-MM-YYYY');
-      console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
-      return `Check-in between ${startDate} to ${endDate}`;
-  }
+    if (option === 'threeday') {
+        const threeDaysLater = checkIn.clone().add(3, 'day');
+        endDate = threeDaysLater.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
+    }
 
-  if (option === 'allday') {
-      const nextMonth = checkIn.clone().add(1, 'month');
-      endDate = nextMonth.format('DD-MM-YYYY');
-      console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
-      return `Check-in between ${startDate} to ${endDate}`;
-  }
+    if (option === 'allday') {
+        const nextMonth = checkIn.clone().add(1, 'month');
+        endDate = nextMonth.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
+    }
 
-  // Add further conditions as necessary
+    // Add further conditions as necessary
 };
+
   
   
   
@@ -458,7 +462,13 @@ const getDateRange = (option) => {
            <p class="text-base leading-6 text-gray-800 dark:text-gray-400 font-mono">Price: Rs.{roomprice}</p>
        </div>
        <div class="w-full px-4 mb-4 md:w-1/2">
-           <p class="text-base leading-6 text-gray-800 dark:text-gray-400 font-mono">Check In at:{checkInDate}</p>
+           <p class="text-base leading-6 text-gray-800 dark:text-gray-400 font-mono">Total Payment: Rs.{totalPrice}</p>
+       </div>
+       <div class="w-full px-4 mb-4 md:w-1/2">
+           <p class="text-base leading-6 text-gray-800 dark:text-gray-400 font-mono">Total Days:{totalDays}</p>
+       </div>
+       <div class="w-full px-4 mb-4 md:w-1/2">
+           <p class="text-base leading-6 text-gray-800 dark:text-gray-400 font-mono">Check In - CheckOut at::{checkInDate} - {checkOutDate}</p>
        </div>
    </div>
 </div>
@@ -495,7 +505,7 @@ const getDateRange = (option) => {
      <div class="-my-3 divide-y divide-gray-200 dark:divide-gray-800">
        <dl class="flex items-center justify-between gap-4 py-3">
          <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-         <dd class="text-base font-medium text-gray-900 dark:text-white">{roomprice}</dd>
+         <dd class="text-base font-medium text-gray-900 dark:text-white">{totalPrice}</dd>
        </dl>
 
        <dl class="flex items-center justify-between gap-4 py-3">
@@ -506,7 +516,7 @@ const getDateRange = (option) => {
        <dl class="flex items-center justify-between gap-4 py-3">
          <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Arene Service Charge</dt>
          <dd className="text-base font-medium text-gray-900 dark:text-white">
-  {parseFloat(roomprice) * 0.15}
+  {arenecharge}
 </dd>
 
        </dl>

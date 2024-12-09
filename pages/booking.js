@@ -26,6 +26,12 @@ const Booking = () => {
   const [couponData, setCouponData] = useState([]);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [savings, setSavings] = useState(0); // Added state for savings
+  console.log('Name:', Name);
+console.log('Room Type:', roomType);
+console.log('Room Price:', roomprice);
+console.log('Agent ID:', Agentid);
+console.log('Location:', location);
+console.log('Check-In Date:', checkInDate);
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
       setLoading(true);
@@ -124,60 +130,48 @@ const Booking = () => {
       });
   }, []);
 
- const applyCoupon = (couponCode) => {
-  console.log('Applying coupon:', couponCode); // Log coupon code
-  
-  // Check if couponData is loaded
-  if (!couponData || couponData.length === 0) {
-    console.log('Coupons are not loaded yet.');
-    toast.error('Coupons are not loaded yet. Please wait.');
-    return getPaymentAmount(); // Return current payment amount
-  }
+  const applyCoupon = () => {
+    console.log('Applying coupon:', couponCode); // Log coupon code
 
-  // Find the coupon from couponData
-  const coupon = couponData.find((coupon) => coupon.code === couponCode);
-  console.log('Found coupon:', coupon);
-
-  if (coupon) {
-    const currentDate = dayjs().format('YYYY-MM-DD');
-    const expiryDate = dayjs(coupon.expirydate).format('YYYY-MM-DD');
-    console.log('Current date:', currentDate);
-    console.log('Coupon expiry date:', expiryDate);
-
-    if (dayjs(currentDate).isBefore(expiryDate) || dayjs(currentDate).isSame(expiryDate, 'day')) {
-      // Calculate discounted price
-      const discountAmount = parseFloat(coupon.price); // Assuming coupon.price is the fixed discount amount
-      let basePrice = 0;
-
-  
-      if (paymentOption === 'oneday') {
-        basePrice = 500;
-      } else if (paymentOption === 'threeday') {
-        basePrice = 1000;
-      } else {
-        basePrice = getPaymentAmount().paymentAmount; // fallback to current payment amount
-      }
-
-      const discountedPrice = basePrice - discountAmount;
-
-      console.log('Base price:', basePrice);
-      console.log('Discount amount:', discountAmount);
-      console.log('Discounted price:', discountedPrice);
-
-      setAppliedCoupon(coupon);
-      setSavings(discountAmount);
-      toast.success(`Coupon ${coupon.code} applied successfully!`);
-      return discountedPrice;
-    } else {
-      console.log('Coupon has expired.');
-      toast.error(`Coupon ${coupon.code} has expired!`);
+    // Check if couponData is loaded
+    if (!couponData || couponData.length === 0) {
+        console.log('Coupons are not loaded yet.');
+        toast.error('Coupons are not loaded yet. Please wait.');
+        return;
     }
-  } else {
-    console.log('Invalid coupon code.');
-    toast.error('Invalid coupon code!');
-  }
-  return getPaymentAmount().paymentAmount;
+
+    // Find the coupon based on the entered coupon code
+    const coupon = couponData.find((coupon) => coupon.code === couponCode);
+    console.log('Found coupon:', coupon);
+
+    if (coupon) {
+        const currentDate = moment().format('YYYY-MM-DD');
+        const expiryDate = moment(coupon.expirydate).format('YYYY-MM-DD');
+        console.log('Current date:', currentDate);
+        console.log('Coupon expiry date:', expiryDate);
+
+        if (moment(currentDate).isBefore(expiryDate) || moment(currentDate).isSame(expiryDate, 'day')) {
+            const discountAmount = parseFloat(coupon.price); // Assuming coupon.price is the fixed discount amount
+            let basePrice = getBasePrice(); // Create a function to get base price based on paymentOption
+            const discountedPrice = basePrice - discountAmount;
+
+            console.log('Base price:', basePrice);
+            console.log('Discount amount:', discountAmount);
+            console.log('Discounted price:', discountedPrice);
+
+            setAppliedCoupon(coupon);
+            setSavings(discountAmount);
+            toast.success(`Coupon ${coupon.code} applied successfully!`);
+        } else {
+            console.log('Coupon has expired.');
+            toast.error(`Coupon ${coupon.code} has expired!`);
+        }
+    } else {
+        console.log('Invalid coupon code.');
+        toast.error('Invalid coupon code!');
+    }
 };
+
 
 
   const submitBookingData = async (paymentAmount,total,payAtCheckIn) => {
@@ -299,10 +293,10 @@ const Booking = () => {
     const baseAmount = roomprice ;
     if (paymentOption === 'oneday') {
       paymentAmount = 700;
-      payAtCheckIn = baseAmount-paymentAmount+350; // 4250 - 500
+      payAtCheckIn = baseAmount-paymentAmount+350- savings ; // 4250 - 500
     } else if (paymentOption === 'threeday') {
       paymentAmount = 1350;
-      payAtCheckIn = baseAmount-paymentAmount+350; // 4250 - 1000
+      payAtCheckIn = baseAmount-paymentAmount+350- savings ; // 4250 - 1000
     } else {
       paymentAmount = (roomprice ? Math.round(parseFloat(roomprice) + 350 - savings ) : 4350);
       payAtCheckIn = 0; // Full payment upfront
@@ -319,40 +313,63 @@ const Booking = () => {
   
     // Ensure the final paymentAmount is an integer and meets the minimum value requirement
     paymentAmount = Math.max(Math.round(paymentAmount), 100);
-    const total = paymentAmount + payAtCheckIn-savings;
+    console.log("Payemntamount",paymentAmount)
+    console.log("Payatcheckin",payAtCheckIn)
+    console.log("Saving",savings)
+    const total = paymentAmount + payAtCheckIn;
     return { paymentAmount, payAtCheckIn,total };
   };
   
+  const getBasePrice = () => {
+    // Calculate base price based on paymentOption
+    if (paymentOption === 'oneday') {
+        return 500; // Example base price
+    } else if (paymentOption === 'threeday') {
+        return 1000; // Example base price
+    } else {
+        return roomprice; // Fallback to room price
+    }
+};
   
   
   
+  
+  const dayjs = require('dayjs'); // Ensure dayjs is imported
+  const moment = require('moment'); 
   const getDateRange = (option) => {
-    const checkIn = dayjs(checkInDate); // Parse checkInDate with dayjs
-    let startDate = checkIn.format('YYYY-MM-DD');
+    const checkIn = moment(checkInDate, 'DD-MM-YYYY'); // Parse checkInDate with moment
+    const checkInFormatted = checkIn.format('DD-MM-YYYY'); // Format checkInDate
+    let startDate = checkInFormatted; // Start date is the same as checkInDate
     let endDate = '';
 
+    console.log("startdate", startDate); // Log start date in DD-MM-YYYY format
+
     if (option === 'oneday') {
-      const nextDay = checkIn.add(1, 'day');
-      endDate = nextDay.format('YYYY-MM-DD');
-      return `Check-in between ${startDate} to ${endDate}`;
+        const nextDay = checkIn.clone().add(1, 'day');
+        endDate = nextDay.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
     }
 
     if (option === 'threeday') {
-      const threeDaysLater = checkIn.add(3, 'day');
-      endDate = threeDaysLater.format('YYYY-MM-DD');
-      return `Check-in between ${startDate} to ${endDate}`;
+        const threeDaysLater = checkIn.clone().add(3, 'day');
+        endDate = threeDaysLater.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
     }
 
     if (option === 'allday') {
-      const oneMonthLater = checkIn.add(1, 'month');
-      endDate = oneMonthLater.format('YYYY-MM-DD');
-      return `Check-in between ${startDate} to ${endDate}`;
+        const nextMonth = checkIn.clone().add(1, 'month');
+        endDate = nextMonth.format('DD-MM-YYYY');
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); // Log start and end date
+        return `Check-in between ${startDate} to ${endDate}`;
     }
 
-    return '';
-  };
+    // Add further conditions as necessary
+};
 
   
+ 
   
   return (
     <div>
@@ -549,42 +566,22 @@ const Booking = () => {
           </div>
         </div>
         <div className="mb-4">
-      <label className="block text-gray-700">Payment Option</label>
-      <div className="mt-1">
-        <label className="inline-flex items-center">
-          <input
-            type="radio"
-            name="paymentOption"
-            value="oneday"
-            checked={paymentOption === "oneday"}
-            onChange={(e) => setPaymentOption(e.target.value)}
-            className="form-radio"
-          />
-          <span className="text-md ml-2 font-bold font-mono">{getDateRange(paymentOption)}</span>
-        </label>
-        <label className="inline-flex items-center ">
-          <input
-            type="radio"
-            name="paymentOption"
-            value="threeday"
-            checked={paymentOption === "threeday"}
-            onChange={(e) => setPaymentOption(e.target.value)}
-            className="form-radio"
-          />
-          <span className="ml-2 text-md font-bold font-mono">{getDateRange(paymentOption)}</span>
-        </label>
-        <label className="inline-flex items-center ">
-          <input
-            type="radio"
-            name="paymentOption"
-            value="allday"
-            checked={paymentOption === "allday"}
-            onChange={(e) => setPaymentOption(e.target.value)}
-            className="form-radio"
-          />
-          <span className="ml-2 text-md font-bold font-mono"> {getDateRange(paymentOption)}</span>
-        </label>
-      </div>
+        <label className="block text-gray-700">Payment Option</label>
+<div className="mt-1">
+  {['oneday', 'threeday', 'allday'].map((option) => (
+    <label key={option} className="inline-flex items-center">
+      <input
+        type="radio"
+        name="paymentOption"
+        value={option}
+        checked={paymentOption === option}
+        onChange={(e) => setPaymentOption(e.target.value)}
+        className="form-radio"
+      />
+      <span className="ml-2 text-md font-bold font-mono">{getDateRange(option)}</span>
+    </label>
+  ))}
+</div>
       {/* <div className="mt-4">
         <p className="text-gray-600">{getDateRange(paymentOption)}</p>
       </div> */}

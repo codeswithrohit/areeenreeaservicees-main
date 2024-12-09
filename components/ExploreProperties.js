@@ -5,7 +5,7 @@ import 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
-import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FaMapMarkerAlt,FaStar } from 'react-icons/fa';
 
 const ExploreProperties = () => {
   const router = useRouter();
@@ -73,7 +73,27 @@ const ExploreProperties = () => {
     };
     router.push(routes[type] || `/property?id=${id}`);
   };
+  const calculateAverageRating = (reviews) => {
+    if (!reviews || reviews.length === 0) return 0;
+    const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    return (totalRating / reviews.length).toFixed(1); // Round to one decimal
+  };
 
+  const renderStars = (average) => {
+    const fullStars = Math.floor(average);
+    const halfStar = average - fullStars >= 0.5;
+    return (
+      <div className="flex items-center">
+        {[...Array(fullStars)].map((_, i) => (
+          <FaStar key={i} className="text-yellow-500" />
+        ))}
+        {halfStar && <FaStar className="text-yellow-500 opacity-50" />}
+        {[...Array(5 - fullStars - (halfStar ? 1 : 0))].map((_, i) => (
+          <FaStar key={i + fullStars} className="text-gray-300" />
+        ))}
+      </div>
+    );
+  };
   return (
     <div className="bg-gray-50 min-h-screen">
       <Head>
@@ -147,6 +167,12 @@ const ExploreProperties = () => {
                     <h3 className="text-xl font-bold text-gray-800 truncate">
                       {item.ResortName || item.Propertyname || item.PGName || item.HotelName || item.BanqueethallName || 'N/A'}
                     </h3>
+                    <div className="flex items-center">
+                {renderStars(calculateAverageRating(item.reviews))}
+                <span className="ml-2 text-sm text-gray-600">
+                  {calculateAverageRating(item.reviews)} / 5
+                </span>
+              </div>
                     <p className="text-sm text-gray-500 flex items-center mt-2">
                       <FaMapMarkerAlt className="text-teal-500 mr-2" />
                       {item.nearby}, {item.district}

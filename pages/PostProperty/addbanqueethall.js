@@ -682,7 +682,7 @@ const handleDeleteVideo = (roomIndex) => {
   <option value="Wedding ceremony">Wedding ceremony</option>
   <option value="Birthday Party">Birthday Party</option>
   <option value="Wedding reception">Wedding reception</option>
-  <option value="Confrence / Seminar / Worksho">Confrence / Seminar / Worksho</option>
+  <option value="Confrence / Seminar / Workshop">Confrence / Seminar / Workshop</option>
             {/* Add more options as needed */}
           </select>
         </div>

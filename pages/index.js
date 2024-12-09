@@ -102,6 +102,7 @@ const Index = () => {
   return (
     <div>
       {/* Home Page */}
+     
       <HomePage />
       {/* Explore City Section */}
       <Explorecity />

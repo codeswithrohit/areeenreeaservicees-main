@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../src/layouts/Footer";
 import MobileMenu from "../src/layouts/MobileMenu";
 import 'tailwindcss/tailwind.css'; 
+import Hometab from "../components/Hometab";
 
 const MyApp = ({ Component, pageProps }) => {
  
@@ -45,6 +46,7 @@ const MyApp = ({ Component, pageProps }) => {
         <Fragment>
           <MobileMenu />
           <Header1 />
+          <Hometab/>
         </Fragment>
       )}
       

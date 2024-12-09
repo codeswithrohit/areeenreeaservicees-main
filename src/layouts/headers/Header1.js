@@ -80,20 +80,19 @@ const Header1 = () => {
           <div className="primary-menu">
             <div className="row">
               <div style={{backgroundColor:'white'}} className="col-lg-2 col-5">
-                <div className="">
-                  <Link href="/">
-                  <a
-  className="h-20 w-20 mt-2" // Replace with your desired class name
- 
->
-  <img
-    src="https://areneservices.in/icon.png"
-    alt="Brand Logo"
-  />
-</a>
+              <div className="flex flex-col items-center justify-center  ">
+  <a href="/" className="">
+    <img
+      src="https://areneservices.in/icon.png"
+      alt="Arene Services"
+      className="h-20 w-20 "
+    />
+      <h1 className="text-xs text-center mr-6 font-bold text-gray-900">
+    ARENE SERVICES
+  </h1>
+  </a>
 
-                  </Link>
-                </div>
+</div>
               </div>
               <div style={{backgroundColor:'white'}} className="col-lg-6 col-2">
                 <div className="nav-menu">
