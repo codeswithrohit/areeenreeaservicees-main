@@ -15,14 +15,45 @@ import Hometab from "../components/Hometab";
 
 const MyApp = ({ Component, pageProps }) => {
  
-
-
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
 
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        fetchUserData(authUser.uid);
+      } else {
+        setUser(null);
+        setUserData(null);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
+  const fetchUserData = async (uid) => {
+    try {
+      const userDoc = await firebase
+        .firestore()
+        .collection("Users")
+        .doc(uid)
+        .get();
+      if (userDoc.exists) {
+        const fetchedUserData = userDoc.data();
+        setUserData(fetchedUserData);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setLoading(false);
+    }
+  };
 
-
+// console.log("userData")
   
 
   const showHeaderFooterMobileMenu = !router.pathname.includes('/Admin') && !router.pathname.includes('/Agent') && !router.pathname.includes('/AreneChefVendor') && !router.pathname.includes('/ArenelaundryVendor') && !router.pathname.includes('/PostProperty') && !router.pathname.includes('/Deliveryboy');
@@ -50,7 +81,7 @@ const MyApp = ({ Component, pageProps }) => {
         </Fragment>
       )}
       
-      <Component  {...pageProps} />
+      <Component userData={userData}  {...pageProps} />
       {showHeaderFooterMobileMenu && (
         <Fragment>
           <Footer />

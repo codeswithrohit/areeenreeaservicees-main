@@ -167,7 +167,7 @@ const Header1 = () => {
                     </div>
 
                     {showDropdown && (
-                      <div class="absolute  right-0 w-48 top-4   bg-white shadow-lg rounded-2xl dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div class=" z-30  right-0 w-48 top-4   bg-white shadow-lg rounded-2xl dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div
                           class="py-1 border-b border-gray-200 dark:border-gray-600"
                           role="none"

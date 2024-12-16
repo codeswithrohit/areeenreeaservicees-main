@@ -7,8 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { FaMapMarkerAlt } from 'react-icons/fa';
-
+import { FaMapMarkerAlt,FaStar } from 'react-icons/fa';
 const PropertiesByCities = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -153,7 +152,29 @@ const PropertiesByCities = () => {
     router.push(href);
   };
 
-  console.log("fetchedData", fetchedData);
+  const calculateAverageRating = (reviews) => {
+    if (!reviews || reviews.length === 0) return 0;
+    const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    return (totalRating / reviews.length).toFixed(1); // Round to one decimal
+  };
+
+  const renderStars = (average) => {
+    const fullStars = Math.floor(average);
+    const halfStar = average - fullStars >= 0.5;
+    return (
+      <div className="flex items-center">
+        {[...Array(fullStars)].map((_, i) => (
+          <FaStar key={i} className="text-yellow-500" />
+        ))}
+        {halfStar && <FaStar className="text-yellow-500 opacity-50" />}
+        {[...Array(5 - fullStars - (halfStar ? 1 : 0))].map((_, i) => (
+          <FaStar key={i + fullStars} className="text-gray-300" />
+        ))}
+      </div>
+    );
+  };
+
+  console.log("fetchedData", filteredData);
 
   return (
     <div>
@@ -198,69 +219,59 @@ const PropertiesByCities = () => {
               <p className="text-lg text-gray-700">No properties available for this location.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredData.map((item) => (
-                <div key={item.id} className="bg-white shadow-md rounded-lg overflow-hidden">
-                  <div className="relative">
-                  <div className="relative h-[240px] w-full">
-                    <Carousel
-                      showThumbs={false} // Hide thumbnails
-                      infiniteLoop // Infinite looping of the carousel
-                      useKeyboardArrows // Allow navigation using keyboard arrows
-                      autoPlay // Automatically play the carousel
-                      interval={3000} // Time interval between slides (in milliseconds)
-                    >
-                      {item.imgSrc.map((src, index) => (
-                        <div key={index} className="w-full h-64">
-                          <img src={src} alt="image" className="w-full h-64 object-cover" />
-                        </div>
-                      ))}
-                    </Carousel>
-                  </div>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-xl font-mono font-semibold text-center">
-                      {item.type === 'Resortdetail' ? item.ResortName :
-                       item.type === 'Banqueethalldetail' ? item.BanqueethallName :
-                       item.type === 'Hoteldetail' ? item.HotelName :
-                       item.type === 'pgdetail' ? item.PGName :
-                       item.type === 'buydetail' ? item.Propertyname :
-                       item.type === 'rentdetail' ? item.PropertyName : 'N/A'
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition"
+              >
+                <div className="relative h-48">
+                  {item.roomTypes?.[0]?.images?.[0] || item.propertytypes?.[0]?.images?.[0] ? (
+                    <img
+                      src={
+                        item.roomTypes?.[0]?.images?.[0] ||
+                        item.propertytypes?.[0]?.images?.[0]
                       }
-                    </p>
-                    <div className="flex justify-center">
-                      <p className="text-sm text-gray-500 font-mono font-semibold flex text-center"><FaMapMarkerAlt className="text-red-500 mr-2" />{formatLocation(item.location)}</p>
+                      alt="Property"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full bg-gray-200 text-gray-400">
+                      No Image Available
                     </div>
-                    {item.type === 'Banqueethalldetail' ? (
-                      <div className='flex'>
-                        <p className='font-mono text-center font-bold'><i className="fa-solid fa-utensils me-2"></i>Veg Plate: ₹{item.vegperplate || 'N/A'}</p>
-                        <p className='font-mono text-center font-bold'><i className="fa-solid fa-burger me-2"></i>Non-Veg Plate: ₹{item.nonvegperplate || 'N/A'}</p>
-                      </div>
-                    ) : item.type === 'Resortdetail' || item.type === 'Hoteldetail' || item.type === 'pgdetail' ? (
-                      <>
-                        {item.roomTypes && item.roomTypes.map((property, i) => (
-                          <div className='flex justify-center' key={i}>
-                            <p className='text-gray-900 font-bold font-mono'>{i + 1}. {property.type}-{property.price}</p>
-                          </div>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        {item.propertytypes.map((property, i) => (
-                          <div className='flex justify-center' key={i}>
-                            <span className="text-gray-900 font-bold font-mono">{i + 1}. {property.type} - {property.price}</span>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                    <p className='font-semibold font-mono text-center'>Distance: {item.distance ? item.distance : 'Calculating...'}</p>
-                    <div className='flex items-center justify-center' >
-                    <button  onClick={() => handleBookMeClick(item.type, item.id)} class="hover:brightness-80 hover:animate-pulse font-bold py-2 px-6 rounded-full bg-gradient-to-r from-emerald-200 to-emerald-800 text-white">Book Me</button>
-                      </div>
-                  </div>
+                  )}
                 </div>
-              ))}
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-800 truncate">
+                    {item.ResortName || item.Propertyname || item.PGName || item.HotelName || item.BanqueethallName || 'N/A'}
+                  </h3>
+                  <div className="flex items-center">
+              {renderStars(calculateAverageRating(item.reviews))}
+              <span className="ml-2 text-sm text-gray-600">
+                {calculateAverageRating(item.reviews)} / 5
+              </span>
             </div>
+                  <p className="text-sm text-gray-500 flex items-center mt-2">
+                    <FaMapMarkerAlt className="text-teal-500 mr-2" />
+                    {item.nearby}, {item.district}( near {item.distance} from  {location})
+                  </p>
+                  <div className="mt-4">
+                    {(item.roomTypes || item.propertytypes)?.map((property, i) => (
+                      <p key={i} className="text-sm text-gray-700">
+                        {i + 1}. {property.type} - ₹{property.price}
+                      </p>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => handleBookMeClick(item.type, item.id)}
+                    className="mt-4 w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition"
+                  >
+                    BOOK ME NOW
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
           )}
         </div>
       </section>

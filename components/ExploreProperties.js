@@ -7,13 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
 import { FaMapMarkerAlt,FaStar } from 'react-icons/fa';
 
-const ExploreProperties = () => {
+const ExploreProperties = ({userData}) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [filteredData, setFilteredData] = useState([]);
   const [fetchedData, setFetchedData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
-
+console.log("userDataaa",userData)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,7 +62,7 @@ const ExploreProperties = () => {
     }
   }, [selectedCategory, fetchedData, loading]);
 
-  const handleBookMeClick = (type, id) => {
+  const handleBookMeClick = async (type, id) => {
     const routes = {
       pgdetail: `/pgdetail?id=${id}`,
       buydetail: `/listing-details-2?id=${id}`,
@@ -71,8 +71,38 @@ const ExploreProperties = () => {
       Resortdetail: `/resortdetail?id=${id}`,
       Banqueethalldetail: `/banqueetdetail?id=${id}`,
     };
+
+    const selectedProperty = fetchedData.find((item) => item.type === type && item.id === id);
+
+    if (!selectedProperty) return;
+
+    // Store in local storage
+    const storedData = JSON.parse(localStorage.getItem('WatchHistory')) || [];
+    storedData.push(selectedProperty);
+    localStorage.setItem('WatchHistory', JSON.stringify(storedData));
+
+    // Store in Firestore if userData is available
+    if (userData) {
+      try {
+        const historyRef = firebase.firestore().collection('WatchHistory');
+        await historyRef.add({
+         userData,
+          ...selectedProperty,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        // toast.success('Booking history saved successfully!');
+      } catch (error) {
+        console.error('Error saving history to Firestore:', error);
+        // toast.error('Failed to save booking history.');
+      }
+    }
+
+    // Navigate to the relevant page
     router.push(routes[type] || `/property?id=${id}`);
   };
+
+
+
   const calculateAverageRating = (reviews) => {
     if (!reviews || reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
@@ -95,7 +125,7 @@ const ExploreProperties = () => {
     );
   };
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 ">
       <Head>
         <script
           src={`https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`}
@@ -104,14 +134,14 @@ const ExploreProperties = () => {
         ></script>
       </Head>
       <section className="py-8">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-8xl mx-auto px-4">
           <div className="text-center mb-6">
             <p className="text-sm font-semibold text-teal-600 uppercase">
               Featured Properties
             </p>
             <h1 className="text-4xl font-extrabold text-gray-900">Recommended for You</h1>
           </div>
-          <div className="flex gap-4 mb-8 overflow-x-auto whitespace-nowrap justify-center lg:justify-center">
+          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4  justify-center">
   {[
     { label: 'All', value: 'All' },
     { label: 'ARENE PG', value: 'pgdetail' },
@@ -144,7 +174,7 @@ const ExploreProperties = () => {
           ) : filteredData.length === 0 ? (
             <p className="text-center text-gray-600">No properties available for this location.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredData.map((item) => (
                 <div
                   key={item.id}

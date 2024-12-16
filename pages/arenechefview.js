@@ -3,13 +3,118 @@ import { firebase } from '../Firebase/config';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { useRouter } from 'next/router';
-
+import Modal from 'react-modal';
+import moment from 'moment';
+import {FaStar,FaRegStar } from "react-icons/fa"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const AreneChef = () => {
     const router = useRouter();
     const [fetchedData, setFetchedData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTenure, setSelectedTenure] = useState(0);
     const [quantity, setQuantity] = useState(0);
+
+
+    const [showModal, setShowModal] = useState(false);
+    const [reviews, setReviews] = useState([]);
+    const [reviewModalVisible, setReviewModalVisible] = useState(false);
+    const [name, setName] = useState('');
+    const [message, setMessage] = useState('');
+    const [rating, setRating] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
+    const [ratingsCount, setRatingsCount] = useState({});
+    const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+
+  const calculateRatings = (reviews) => {
+    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let totalRatingSum = 0;
+
+    reviews.forEach((review) => {
+      counts[review.rating] += 1;
+      totalRatingSum += review.rating;
+    });
+
+    setRatingsCount(counts);
+    setAverageRating(reviews.length > 0 ? (totalRatingSum / reviews.length).toFixed(1) : 0);
+  };
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        fetchUserData(authUser.uid);
+      } else {
+        setUser(null);
+        setUserData(null);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const fetchUserData = async (uid) => {
+    try {
+      const userDoc = await firebase
+        .firestore()
+        .collection("Users")
+        .doc(uid)
+        .get();
+      if (userDoc.exists) {
+        const fetchedUserData = userDoc.data();
+        setUserData(fetchedUserData);
+        setName(fetchedUserData?.name || "");
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setIsLoading(false);
+    }
+  };
+  const handleSubmitReview = async () => {
+    if (!name || !message || !rating) {
+      toast.error("Please fill out all fields and select a rating.");
+      return;
+    }
+
+    const newReview = {
+      name,
+      message,
+      rating,
+      date: moment().format('YYYY-MM-DD'),
+    };
+
+    try {
+      const pgId = router.query.id;
+      if (!pgId) return;
+
+      const pgRef = firebase.firestore().collection('Cloud Kitchen').doc(pgId);
+      await pgRef.update({
+        reviews: firebase.firestore.FieldValue.arrayUnion(newReview),
+      });
+
+      setReviews((prev) => [...prev, newReview]);
+      calculateRatings([...reviews, newReview]);
+      setReviewModalVisible(false);
+      toast.success("Review submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit the review.");
+    }
+  };
+
+  const renderStars = (count) => (
+    <div className="flex items-center space-x-1">
+      {Array.from({ length: count }).map((_, idx) => (
+        <FaStar key={idx} className="text-orange-500" />
+      ))}
+      {Array.from({ length: 5 - count }).map((_, idx) => (
+        <FaRegStar key={idx} className="text-gray-400" />
+      ))}
+    </div>
+  );
+
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -153,13 +258,8 @@ const AreneChef = () => {
                                             </button>
                                         </div>
                                     </div>
-
-                                    <hr className="my-8" />
-
-                                    <div className="mt-8">
-                                        <h3 className="text-xl font-bold text-gray-800">Ingredients</h3>
-                                        <p className="text-sm text-gray-800 mt-4">{fetchedData.Ingredients}</p>
-                                    </div>
+                                    <hr className="my-6" />
+                                    <div className='flex gap-8' >
                                     <button 
                                         type="button" 
                                         className="w-full mt-8 px-6 py-3 bg-emerald-400 hover:bg-emerald-500 text-white text-sm font-semibold rounded-md"
@@ -167,9 +267,91 @@ const AreneChef = () => {
                                     >
                                         Order Now
                                     </button>
+                                    <button 
+                                        type="button" 
+                                        className="w-full mt-8 px-6 py-3 bg-emerald-800 hover:bg-emerald-500 text-white text-sm font-semibold rounded-md"
+                                      
+                                    >
+                                     Add to Cart
+                                    </button>
+                                    </div>
+
+                                    <hr className="my-8" />
+
+                                    <div className="mt-8">
+                                        <h3 className="text-xl font-bold text-gray-800">Ingredients</h3>
+                                        <p className="text-sm text-gray-800 mt-4">{fetchedData.Ingredients}</p>
+                                    </div>
+
+                                    <div className='bg-black' >
+          <div className="my-6 p-4">
+            <h2 className="text-2xl font-bold">Reviews</h2>
+            <button
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() => setReviewModalVisible(true)}
+            >
+              Submit Your Review
+            </button>
+            
+
+            {reviews.map((review, idx) => (
+            <div key={idx} class="flex items-start mt-2 px-4 py-2">
+                                <img src="https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg" class="w-12 h-12 rounded-full border-2 border-white" />
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-bold text-white">{review.name} ({review.date}) </h4>
+                                    <p>{renderStars(review.rating)}</p>
+                                    <p class="text-xs text-white mt-1">{review.message}</p>
+                                </div>
+                            </div>
+                                 ))}
+          </div>
+               </div>
+
+                                 
                                 </div>
                             </div>
                         </div>
+                        <Modal
+        isOpen={reviewModalVisible}
+        onRequestClose={() => setReviewModalVisible(false)}
+        contentLabel="Submit Review"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto"
+        overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-4">Submit Your Review</h2>
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border p-2 mb-4 rounded"
+        />
+        <textarea
+          placeholder="Your Review"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full border p-2 mb-4 rounded"
+        ></textarea>
+        <div className="mb-4">
+          <span className="font-bold">Rating:</span>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              className={`inline text-xl cursor-pointer ${
+                star <= rating ? "text-orange-500" : "text-gray-400"
+              }`}
+              onClick={() => setRating(star)}
+            />
+          ))}
+        </div>
+        <button
+          className="w-full bg-blue-600 text-white p-2 rounded"
+          onClick={handleSubmitReview}
+        >
+          Submit
+        </button>
+      </Modal>
+    <ToastContainer />
                     </div>
                 )
             )}

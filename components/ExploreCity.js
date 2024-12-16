@@ -59,11 +59,11 @@ const Explorecity = () => {
 
   return (
     <section>
-      <div className="max-w-[90%] lg:max-w-[85%] mx-auto my-1 md:my-1 lg:my-2">
-        <div className="flex flex-col lg:flex-row md:flex-row justify-between">
+      <div className="max-w-[95%] lg:max-w-[85%] mx-auto ">
+        <div className="flex flex-col lg:flex-row md:flex-row ">
           <div>
-            <p className="text-lg mb-2 text-[#43d3b1]">EXPLORE CITIES</p>
-            <p className="text-3xl font-semibold">Properties By Cities</p>
+            <p className="text-lg sm:text-md mb-2 text-[#43d3b1] mt-12">EXPLORE CITIES</p>
+            <p className="md:text-3xl text-xl font-semibold">Properties By Cities</p>
           </div>
           {/* <div>
             <a href="#" className="border-b-2 border-[#43d3b1] pb-1">
@@ -72,7 +72,7 @@ const Explorecity = () => {
             </a>
           </div> */}
         </div>
-        <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+        <div className="px-4 mt-16  sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:mt-20">
           <Splide options={splideOptions} extensions={{ AutoScroll }} aria-label="City Images">
             {data.map((item, index) => (
               <SplideSlide key={index}>
@@ -81,7 +81,7 @@ const Explorecity = () => {
                   className="flex flex-col items-center cursor-pointer"
                 >
                   <img
-                    className="object-cover w-28 h-28 mb-2 rounded-full shadow"
+                    className="object-contain md:w-28 md:h-28 w-16 h-16 mb-2 rounded-full shadow"
                     src={item.src}
                     alt={item.location}
                   />

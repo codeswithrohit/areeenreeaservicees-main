@@ -118,7 +118,7 @@ export const BanQueetHall = () => (
 export const CloudKitchen = () => (
   <Fragment>
     <li className="menu-item" >
-      <Link href="/allarenechef">Arene Chef</Link>
+      <Link href="/arenechef">Arene Chef</Link>
     </li>
   </Fragment>
 );

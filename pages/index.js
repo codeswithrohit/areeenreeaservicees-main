@@ -9,6 +9,7 @@ import Propertytype from "../components/Propertytype";
 import OurService from "../components/OurService";
 import { useLoadScript } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
+import WatchHistory from "../components/WatchHistory";
 
 const Counter = dynamic(() => import("../src/components/Counter"), {
   ssr: false,
@@ -17,7 +18,7 @@ const Counter = dynamic(() => import("../src/components/Counter"), {
 // Define the places library to use with Google Maps API
 const libraries = ['places'];
 
-const Index = () => {
+const Index = ({userData}) => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [locations, setLocations] = useState(null);
@@ -100,14 +101,14 @@ const Index = () => {
   }
 
   return (
-    <div>
+    <div className="bg-white" >
       {/* Home Page */}
      
       <HomePage />
       {/* Explore City Section */}
       <Explorecity />
       {/* Explore Properties Section with fetched location */}
-      <ExploreProperties locations={locations} />
+      <ExploreProperties userData={userData} locations={locations} />
       
       {/* Statistics Section */}
       <div className="bg-white p-4 min-h-[150px] flex items-center justify-center font-[sans-serif] text-[#333]">
@@ -130,7 +131,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      
+      <WatchHistory/>
       {/* Our Services Section */}
       <OurService />
     </div>

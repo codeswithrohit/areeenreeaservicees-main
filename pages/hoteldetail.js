@@ -12,6 +12,8 @@ import {FaMapMarkerAlt, FaInfoCircle, FaTags, FaConciergeBell, FaStar,FaCheckCir
 import Select from 'react-select';
 import Modal from 'react-modal';
 const HotelDetailsViewCard = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [reviewModalVisible, setReviewModalVisible] = useState(false);
   const [name, setName] = useState('');
@@ -235,8 +237,26 @@ const HotelDetailsViewCard = () => {
       </div>
     ) : (
       <div className="container mx-auto bg-white shadow-xl rounded-lg p-4">
-<div className="fixed bottom-0 left-0 z-50 w-full bg-emerald-500 shadow-lg rounded-t-lg p-4">
-  <div className="flex flex-wrap justify-between items-center gap-4">
+          <div className="fixed bottom-10 z-30  right-0 px-4">
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-36 h-12 text-lg font-medium text-white bg-emerald-500 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-emerald-300"
+        >
+          Book Now
+        </button>
+      </div>
+
+      {showModal && (
+  <div className="fixed top-24 right-0 z-30 w-96 h-full bg-emerald-500 shadow-lg p-4 transform transition-transform duration-300 ease-in-out">
+  <div className="relative h-full flex flex-col">
+    {/* Close Button */}
+    <button
+      onClick={() => setShowModal(false)}
+      className="absolute top-0 text-xl right-4 text-white bg-red-500 rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+    >
+      &times;
+    </button>
+    <div className="mt-12 flex flex-col gap-6">
     {/* Check-in Date Input */}
     <div className="w-full sm:w-80">
       <DatePicker
@@ -286,42 +306,44 @@ const HotelDetailsViewCard = () => {
         Book Now
       </button>
     </div>
-  </div>
 </div>
 
+  </div>
+</div>
+      )}
 
 
 
 
 
         {/* Tabs */}
-        <div className="flex justify-center border-b-2 border-gray-300 pb-0 mb-6 relative">
-          {[
-            { name: "Overview", icon: <FaInfoCircle />, ref: overviewRef },
-            { name: "Info & Prices", icon: <FaTags />, ref: infoRef },
-            { name: "Facilities", icon: <FaConciergeBell />, ref: facilitiesRef },
-            { name: "Reviews", icon: <FaStar />, ref: reviewsRef },
-          ].map((tab, index) => (
-            <button
-              key={tab.name}
-              onClick={() => scrollToSection(tab.ref, tab.name)}
-              className={`relative px-6 py-2 text-sm md:text-base font-medium flex items-center space-x-2 transition-all ${
-                activeTab === tab.name
-                  ? "text-blue-600 font-semibold"
-                  : "text-gray-500 hover:text-blue-500"
-              }`}
-            >
-              {/* Icon */}
-              <span className="text-lg">{tab.icon}</span>
-              {/* Label */}
-              <span>{tab.name}</span>
-              {/* Animated Underline */}
-              {activeTab === tab.name && (
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-600 transition-all duration-300"></span>
-              )}
-            </button>
-          ))}
-        </div>
+        <div className="flex flex-row justify-start md:mt-8 border-b-2 border-gray-300 pb-0 mb-6 relative overflow-x-auto space-x-4 md:space-x-6">
+  {[
+    { name: "Overview", icon: <FaInfoCircle />, ref: overviewRef },
+    { name: "Prices", icon: <FaTags />, ref: infoRef },
+    { name: "Facilities", icon: <FaConciergeBell />, ref: facilitiesRef },
+    { name: "Reviews", icon: <FaStar />, ref: reviewsRef },
+  ].map((tab, index) => (
+    <button
+      key={tab.name}
+      onClick={() => scrollToSection(tab.ref, tab.name)}
+      className={`relative px-4 py-2 text-sm md:text-base font-medium flex flex-col items-center md:space-x-3 space-x-1 space-y-2 md:space-y-0 transition-all ${
+        activeTab === tab.name
+          ? "bg-blue-100 text-blue-600 font-semibold rounded-lg shadow-md"
+          : "text-gray-500 hover:text-blue-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      }`}
+    >
+      {/* Icon */}
+      <span className="text-2xl md:text-3xl">{tab.icon}</span>
+      {/* Label */}
+      <span className="text-xs md:text-sm font-bold text-center">{tab.name}</span>
+      {/* Animated Underline */}
+      {activeTab === tab.name && (
+        <span className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 transition-all duration-300"></span>
+      )}
+    </button>
+  ))}
+</div>
   
         {/* Sections */}
         <div ref={overviewRef} className="mb-8">

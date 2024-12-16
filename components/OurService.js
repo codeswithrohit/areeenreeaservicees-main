@@ -12,7 +12,7 @@ const OurService = () => {
                     <div className='h-[80px] w-full'>
                         <img src="/icon/buy.png" alt="" className='h-full w-full object-contain' />
                     </div>
-                    <p className='text-2xl font-semibold mt-4 font-mono'>Sell A Property</p>
+                    <p className='text-2xl font-semibold mt-4 font-mono'>Sell  Property</p>
                     <p className='text-gray-500 text-sm mt-2 mb-6 font-mono'>Showcasing your property's best features for a successful sale.</p>
                     <a href="/signin" className='border border-black py-2 px-4 rounded-btn hover:bg-[#43d3b1] hover:text-white hover:border-[#43d3b1] duration-200 font-mono' >Sell Property</a>
                 </div>
@@ -20,7 +20,7 @@ const OurService = () => {
                     <div className='h-[80px] w-full'>
                         <img src="/icon/rent.png" alt="" className='h-full w-full object-contain' />
                     </div>
-                    <p className='text-2xl font-semibold mt-4 font-mono'>Rent A Property</p>
+                    <p className='text-2xl font-semibold mt-4 font-mono'>Rent  Property</p>
                     <p className='text-gray-500 text-sm mt-2 mb-6 font-mono'>Explore a diverse variety of listings tailored precisely to suit your unique lifestyle needs.</p>
                     <a href="/signin" className='border border-black py-2 px-4 rounded-btn hover:bg-[#43d3b1] hover:text-white hover:border-[#43d3b1] duration-200 font-mono' >Rent Property</a>
                 </div>

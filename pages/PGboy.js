@@ -201,8 +201,8 @@ Experience the difference with Arene Services - where quality meets convenience,
         </button>
       </div>
 
-      <Modal isOpen={filterModalVisible} onRequestClose={() => setFilterModalVisible(false)} className="modal-container">
-        <div className="flex justify-between  bg-black items-center p-4">
+      <Modal isOpen={filterModalVisible} onRequestClose={() => setFilterModalVisible(false)}  className="modal-container mt-4 fixed inset-0 bg-white overflow-y-auto">
+        <div className="flex justify-between   bg-black items-center p-4">
           <button onClick={() => setFilterModalVisible(false)} className="text-red-500">
             <FaWindowClose size={32} />
           </button>

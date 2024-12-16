@@ -79,7 +79,7 @@ const MobileMenu = () => {
     activeLi = (value) =>
       value === activeMenu ? { display: "block" } : { display: "none" };
   return (
-    <header className="header-area header-area-one d-xl-none mb-36 ">
+    <header className="header-area header-area-one d-xl-none   ">
     
       <div className="header-navigation  breakpoint-on">
         <div className="container-fluid">
@@ -280,7 +280,7 @@ const MobileMenu = () => {
                   </div>
                 ) : (
                   <div className="relative group mb-6 ">
-                     <div className="menu-button mt-6">
+                     <div className="menu-button mt-8">
       <div className="flex rounded-lg border hover:border-red-600 overflow-hidden cursor-pointer p-2">
         <FaSignInAlt
           size={20}

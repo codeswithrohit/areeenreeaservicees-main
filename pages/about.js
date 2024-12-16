@@ -1,161 +1,103 @@
-import Link from "next/link";
-import React from "react";
-import PageBanner from "../src/components/PageBanner";
-import TestimoinalSlider from "../src/components/Slider/TestimonialSlider";
-import Layout from "../src/layouts/Layout";
+import React from 'react';
 
-const About = () => {
+const AboutAreneServices = () => {
   return (
-    <div className="min-h-screen mt-16 bg-white" >
+    <div className="bg-white py-16">
+      <div className="w-full mx-auto px-6 sm:px-12 lg:px-20">
+        <div className="bg-white  rounded-lg p-8">
+          <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">About Arene Services</h1>
+          <p className="text-lg text-gray-600 leading-relaxed mb-8 text-center">
+            Welcome to <span className="text-emerald-600 font-semibold">Arene Services</span>,where convenience meets versatility! We are your one-stop solution for a wide array of essential services designed to simplify your life. At Arene, we believe in delivering exceptional experiences across multiple domains, ensuring that whatever your need, we have you covered—all at nominal or negligible charges for the extraordinary services we provide.
 
-      {/*====== Start Features Section ======*/}
-      <section className="features-area">
-        <div className="features-wrapper-three pt-110">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-6">
-                <div className="section-title text-center mb-6 wow fadeInUp">
-                  <span className="sub-title">Our Service</span>
-                </div>
+          </p>
+          
+          <h2 className="text-2xl font-semibold text-gray-700 mt-8 mb-4">Our Services</h2>
+          <div className="space-y-6">
+            {/* Service 1 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Arene PG Accommodation</h3>
+                <p className="text-gray-600 mt-2">
+                Whether you’re a student, professional, or traveler, our well-maintained and comfortable paying guest accommodations are designed to make you feel at home, away from home.  </p>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-3 col-md-6 col-sm-12">
-                <div
-                  className="features-item features-item-two text-center mb-40 wow fadeInUp"
-                  data-wow-delay="10ms"
-                >
-                
-                  <div className="content">
-                    <h3 className="title">ARENE PG</h3>
-                    
-                    <Link href="/AllPg">
-                      <a className="btn-link icon-btn">More Details</a>
-                    </Link>
-                  </div>
-                </div>
+
+            {/* Service 2 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
               </div>
-              <div className="col-lg-3 col-md-6 col-sm-12">
-                <div
-                  className="features-item features-item-two text-center mb-40 wow fadeInDown"
-                  data-wow-delay="20ms"
-                >
-                  
-                  <div className="content">
-                    <h3 className="title">BUY PROPERTY</h3>
-                   
-                    <Link href="/Allbuy">
-                      <a className="btn-link icon-btn">More Details</a>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-3 col-md-6 col-sm-12">
-                <div
-                  className="features-item features-item-two text-center mb-40 wow fadeInUp"
-                  data-wow-delay="30ms"
-                >
-                  
-                  <div className="content">
-                    <h3 className="title">RENT PROPERTY</h3>
-                  
-                    <Link href="/Allrent">
-                      <a className="btn-link icon-btn">More Details</a>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-3 col-md-6 col-sm-12">
-                <div
-                  className="features-item features-item-two text-center mb-40 wow fadeInDown"
-                  data-wow-delay="40ms"
-                >
-                  <div className="content">
-                    <h3 className="title">Hotel</h3>
-                   
-                    <Link href="/hotelall">
-                      <a className="btn-link icon-btn">More Details</a>
-                    </Link>
-                  </div>
-                </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Property Buying & Selling</h3>
+                <p className="text-gray-600 mt-2">
+                Navigating the real estate market can be daunting, but not with Arene Services by your side. From finding your dream property to selling at the best price, we provide expert assistance to help you make the right decisions, offering end-to-end support for a seamless experience. </p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      {/*====== End Features Section ======*/}
-      {/*====== Start Features Section ======*/}
-      <section className="features-area">
-        <div className="features-wrapper-four ">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="features-img wow fadeInLeft">
-                  <img
-                    src="https://media.licdn.com/dms/image/C5612AQHyzhAzEblGag/article-cover_image-shrink_600_2000/0/1520253580718?e=2147483647&v=beta&t=92rJHwgyMNCGsFPfPkgERZWUYQwkqlJDsLw58FwnJuo"
-                    alt="Features Image"
-                  />
-                </div>
+
+            {/* Service 3 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
               </div>
-              <div className="col-lg-6">
-                <div className="features-content-box features-content-box-one">
-                  <div className="section-title section-title-left mb-30 wow fadeInUp">
-                    <span className="sub-title">Our Speciality</span>
-                    <h2>About Arene Services</h2>
-                  </div>
-                 
-                  <ul className="features-list-one">
-                    <li
-                      className="list-item wow fadeInUp"
-                      data-wow-delay="10ms"
-                    >
-                      <div className="icon">
-                        <i className="flaticon-find" />
-                      </div>
-                      <div className="content">
-                        <h5>Find What You Want</h5>
-                        <p>
-                        Welcome to Arene Services, your premier destination for all your property needs without any brokerage hassles. We specialize in providing top-notch services in PG accommodations, buying, renting, and selling properties, managing hotels, banquet halls, resorts, and laundry facilities.
-                        </p>
-                      </div>
-                    </li>
-                    <li
-                      className="list-item wow fadeInUp"
-                      data-wow-delay="20ms"
-                    >
-                      <div className="icon">
-                        <i className="flaticon-place" />
-                      </div>
-                      <div className="content">
-                        <h5>Easy Choose Your Place</h5>
-                        <p>
-                        At Arene Services, we pride ourselves on our commitment to excellence, transparency, and customer satisfaction. In addition to our core services, we also operate our own cloud kitchen where we prepare and deliver high-quality, delicious food at minimal costs.
-                        </p>
-                      </div>
-                    </li>
-                    <li
-                      className="list-item wow fadeInUp"
-                      data-wow-delay="30ms"
-                    >
-                      <div className="icon">
-                        <i className="flaticon-social-care" />
-                      </div>
-                      <div className="content">
-                        <h5>Live Online Assistance</h5>
-                        <p>
-                        Our dedicated team of professionals works tirelessly to ensure that your experience with us is seamless, efficient, and tailored to your specific requirements. Whether you are looking for a comfortable PG accommodation, a dream property to buy or rent, a luxurious hotel stay, a stunning banquet hall for your special event, a relaxing resort getaway, or reliable laundry services, Arene Services is your one-stop solution.
-                        </p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Arene Chef Food Services</h3>
+                <p className="text-gray-600 mt-2">
+                Highlighting Our Famous Student Special Thali: When it comes to food, Arene Services takes pride in delivering not only variety but also excellence. Our most cherished offering is the Student Special Thali, a perfect blend of taste, nutrition, and affordability. Specifically designed for students, this thali is packed with delicious, wholesome meals that cater to the needs of growing minds and bodies—all at a price that students can easily afford. It’s not just a meal; it’s a nourishing experience that keeps you energized throughout the day.
+<br/>
+<br/>
+But that’s not all! We also offer a wide range of other food options, from quick snacks to full-course meals, ensuring that every craving is satisfied. Whether you’re in the mood for something light or a hearty meal, we have something for everyone, crafted with care and quality. Our commitment to providing fresh, delicious, and affordable food makes us the go-to choice for students, professionals, and families alike.   </p>
+              </div>
+            </div>
+
+            {/* Service 4 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">4</div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Laundry Services</h3>
+                <p className="text-gray-600 mt-2">
+                Wash, Iron, and Fold with Fast Delivery: Say goodbye to laundry day woes! With our efficient laundry services, including wash, iron, and fold, you can have your clothes cleaned and delivered back to you as fast as 2 hours. We ensure your laundry is handled with care and returned neatly pressed, ready for use. Our lightning-fast turnaround and affordable rates make this service perfect for busy individuals who need quick, reliable help.  </p>
+              </div>
+            </div>
+
+            {/* Service 5 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">5</div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Hotel & Resort Bookings</h3>
+                <p className="text-gray-600 mt-2">
+                Planning a getaway or a business trip? Arene Services makes hotel and resort booking a breeze, offering a selection of accommodations to fit your style and budget. </p>
+              </div>
+            </div>
+
+            {/* Service 6 */}
+            <div className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 p-6 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg">6</div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Banquet Hall/Farm House Bookings</h3>
+                <p className="text-gray-600 mt-2">
+                Hosting an event? Our banquet hall and farm house booking services provide stunning venues for weddings, parties, corporate events, and more, ensuring your event is unforgettable.   </p>
               </div>
             </div>
           </div>
+
+          <div className="mt-10 text-center">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Why Choose Arene Services?</h2>
+            <p className="text-gray-600 leading-relaxed">
+            At Arene Services, we’re more than just a service provider—we’re your trusted partner for every aspect of your lifestyle. Our dedication to quality, affordability, and customer satisfaction is at the heart of everything we do. We offer expert assistance to help you make the right decisions, and we combine innovation, convenience, and professionalism to offer the best service in every domain—all for a price that’s easy on your wallet. </p>
+          </div>
         </div>
-      </section>
- 
+      </div>
     </div>
   );
 };
-export default About;
+
+export default AboutAreneServices;
