@@ -58,21 +58,16 @@ const Explorecity = () => {
   };
 
   return (
-    <section>
+    <section className='-mb-24' >
       <div className="max-w-[95%] lg:max-w-[85%] mx-auto ">
         <div className="flex flex-col lg:flex-row md:flex-row ">
           <div>
-            <p className="text-lg sm:text-md mb-2 text-[#43d3b1] mt-12">EXPLORE CITIES</p>
+            <p className="text-lg sm:text-md mb-2 text-[#43d3b1] mt-8">EXPLORE CITIES</p>
             <p className="md:text-3xl text-xl font-semibold">Properties By Cities</p>
           </div>
-          {/* <div>
-            <a href="#" className="border-b-2 border-[#43d3b1] pb-1">
-              View all Properties
-              <i className="fa-solid fa-angle-right ms-1 text-[#43d3b1]"></i>
-            </a>
-          </div> */}
+        
         </div>
-        <div className="px-4 mt-16  sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:mt-20">
+        <div className="px-4 mt-6  sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:mt-2">
           <Splide options={splideOptions} extensions={{ AutoScroll }} aria-label="City Images">
             {data.map((item, index) => (
               <SplideSlide key={index}>

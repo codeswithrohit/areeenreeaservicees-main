@@ -56,7 +56,7 @@ const WatchHistory = () => {
   return (
     <div className='max-w-8xl bg-white mx-auto  px-4' >
            {watchHistory.length > 0 && (
-        <h1 className="text-4xl font-extrabold text-gray-900 py-4">
+        <h1 className="md:text-4xl text-xl underline font-extrabold text-gray-900 py-2">
           Recently Viewed Properties
         </h1>
       )}
@@ -82,7 +82,7 @@ const WatchHistory = () => {
           </div>
         )}
       </div>
-      <div className="p-5">
+      <div className="px-3 py-3">
         <h3 className="text-xl font-bold text-gray-800 truncate">
           {item.ResortName || item.Propertyname || item.PGName || item.HotelName || item.BanqueethallName || 'N/A'}
         </h3>
@@ -92,8 +92,8 @@ const WatchHistory = () => {
             {calculateAverageRating(item.reviews)} / 5
           </span>
         </div>
-        <p className="text-sm text-gray-500 flex items-center mt-2">
-          <FaMapMarkerAlt className="text-teal-500 mr-2" />
+        <p className="text-xs text-gray-900 font-bold flex items-center mt-2">
+          <FaMapMarkerAlt className="text-2xl text-teal-500 mr-2" />
           {item.nearby}, {item.district}
         </p>
         <div className="mt-4">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { useState,useEffect } from "react";
-import { About, Blog, Contact, Home, Listing, Pages } from "./Menu";
+import { About, Blog, CloudKitchen, Contact, Home, LaundryService, Listing, Pages } from "./Menu";
 import { firebase } from "../../Firebase/config";
 import { FaUser, FaShoppingCart,FaSignInAlt, } from "react-icons/fa"; // Import the cart icon
 import { BiShoppingBag } from 'react-icons/bi';
@@ -79,7 +79,7 @@ const MobileMenu = () => {
     activeLi = (value) =>
       value === activeMenu ? { display: "block" } : { display: "none" };
   return (
-    <header className="header-area header-area-one d-xl-none   ">
+    <header  className="header-area header-area-one d-xl-none   ">
     
       <div className="header-navigation  breakpoint-on">
         <div className="container-fluid">
@@ -89,17 +89,19 @@ const MobileMenu = () => {
                 <div className="site-branding">
                   <Link href="/">
                     <a className="brand-logo "  style={{
-    padding: "21px 10px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
+    padding: "1px 1px",
+    backgroundColor: "#FAF9F6",
+    flexDirection:'column'
     // Other styles if needed
   }}>
                     <img
-    src="https://www.areneservices.in/public/front/images/property-logo.png"
+    src="https://areneservices.in/icon.png"
     alt="Brand Logo"
+    style={{width:80,height:64}}
   />
+   <h1 className="text-xs text-center mr-0 font-bold text-gray-900">
+    ARENE SERVICES
+  </h1>
                     </a>
                   </Link>
                 </div>
@@ -163,6 +165,8 @@ const MobileMenu = () => {
                           <i className="ti-arrow-down"></i>
                         </span>
                       </li>
+                      <LaundryService onClick={() => setToggle(false)}/>
+                      <CloudKitchen onClick={() => setToggle(false)}/>
                       <Contact onClick={() => setToggle(false)}/>
                       {/* <li className="nav-btn">
                         <Link href="/Agent/Register">

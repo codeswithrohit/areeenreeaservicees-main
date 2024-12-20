@@ -235,13 +235,14 @@ const BuyProperty = () => {
       </div>
     ) : (
       <div className="container mx-auto bg-white shadow-xl rounded-lg p-4">
-             <div className="fixed bottom-10 z-30  right-0 px-4">
-        <button
-          onClick={() => setShowModal(true)}
-          className="w-36 h-12 text-lg font-medium text-white bg-emerald-500 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-emerald-300"
-        >
-          Enquire Now
-        </button>
+            <div className="fixed bottom-16 z-30  -right-4 px-4">
+<button   onClick={() => setShowModal(true)}
+  class="relative rounded-full bg-blue-500 px-4 py-2 font-mono font-bold text-white transition-colors duration-300 ease-linear before:absolute before:right-1/2 before:top-1/2 before:-z-[1] before:h-3/4 before:w-2/3 before:origin-bottom-left before:-translate-y-1/2 before:translate-x-1/2 before:animate-ping before:rounded-full before:bg-blue-500 hover:bg-blue-700 hover:before:bg-blue-700"
+>
+ENQUIRE NOW
+</button>
+
+       
       </div>
         {showModal && (
         <div className="fixed top-24 right-0 z-30 w-96 h-full bg-emerald-500 shadow-lg p-4 transform transition-transform duration-300 ease-in-out">
@@ -323,11 +324,11 @@ const BuyProperty = () => {
         {/* Sections */}
         <div ref={overviewRef} className="mb-8">
       
-          <h1 className="text-3xl font-bold flex items-center gap-2 mr-4 text-gray-900">
-          <FaCheckCircle className="text-green-500 text-2xl" title="Verified" />
+        <h1 className="md:text-3xl text-xl font-bold flex items-center gap-2 mr-4 text-gray-900">
+        <FaCheckCircle className="text-green-500 text-xl md:text-2xl" title="Verified" />
                 {Buydetaildata.Propertyname}
               </h1>
-              <p className="text-gray-800 font-bold text-lg flex ">  <FaMapMarkerAlt className="text-red-600 mr-1 mt-1" /> {Buydetaildata.nearby},{Buydetaildata.district}</p>
+              <p className="text-gray-900 font-bold md:text-lg text-xs flex ml-4 ">  <FaMapMarkerAlt className="text-red-600 mr-1 mt-1" /> {Buydetaildata.nearby},{Buydetaildata.district}</p>
 
 
               <div className="w-full lg:w-8/10 py-4 relative">

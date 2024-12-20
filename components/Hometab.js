@@ -146,12 +146,23 @@ const PGContent = ({setShowContent}) => {
         </select>
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -318,12 +329,23 @@ const BuyPropertiesContent = ({setShowContent}) => {
         </select>
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -492,12 +514,23 @@ const RentPropertiesContent = ({setShowContent}) => {
         </select>
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -651,12 +684,23 @@ const ArenaRoomContent = ({setShowContent}) => {
       
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -812,12 +856,23 @@ const BanquetHallsContent = ({setShowContent}) => {
       
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -973,12 +1028,23 @@ const ResortContent = ({setShowContent}) => {
       
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         <select 
@@ -1147,12 +1213,23 @@ const ArenaLaundryContent = ({setShowContent}) => {
           </select>
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         {/* <select 
@@ -1319,12 +1396,23 @@ const ArenaChefContent = ({setShowContent}) => {
           </select>
 
         {/* Location Input with Autocomplete */}
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <input type="text" value={Location}
-                name="Location"
-                placeholder="Search location"
-                onChange={(e) => setLocation(e.target.value)}  className="border-b-2 w-full border-[#43d3b1] outline-none text-xs p-1" />
-          </Autocomplete>
+        {isLoaded && (
+    <Autocomplete
+      onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+      onPlaceChanged={() => onPlaceChanged(false)}
+      options={{
+        types: ['(regions)'],
+        componentRestrictions: { country: 'IN' },
+      }}
+    >
+      <input
+        value={Location}
+        placeholder="Search location"
+        onChange={(e) => setLocation(e.target.value)}
+        type="text"
+        className="border-b-2 w-full border-[#43d3b1] outline-none text-sm font-bold text-black p-1"  />
+    </Autocomplete>
+  )}
 
         {/* Nearest Location Dropdown */}
         {/* <select 
@@ -1412,27 +1500,28 @@ const Hometab = () => {
     <div className="" >
     {/* Tab Header */}
     <div
-      className={`bg-white shadow-md fixed left-0 right-0 z-10 transition-all duration-300 ${
-        isScrolled ? 'top-0' : 'md:top-24 top-32'
-      }`}
-    >
-      <div className="flex overflow-x-auto border-b border-gray-200 bg-gray-100">
-        {tabs.map((tab) => (
-          <button
-            key={tab.name}
-            className={`flex items-center px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 hover:text-blue-600 hover:bg-white ${
-              activeTab === tab.name
-                ? 'text-blue-600 bg-white border-b-2 border-blue-600'
-                : 'text-gray-600'
-            }`}
-            onClick={() => handleTabClick(tab.name)}
-          >
-            <span className="mr-2">{tab.icon}</span>
-            {tab.name}
-          </button>
-        ))}
-      </div>
-    </div>
+  className={`bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg fixed left-0 right-0 z-10 transition-all duration-300 ${
+    isScrolled ? 'bottom-0' : 'bottom-0'
+  }`}
+>
+  <div className="flex overflow-x-auto border-b border-transparent">
+    {tabs.map((tab) => (
+      <button
+        key={tab.name}
+        className={`flex items-center px-6 py-3 text-sm font-semibold transition-colors duration-300 rounded-lg whitespace-nowrap ${
+          activeTab === tab.name
+            ? 'text-white bg-gradient-to-r from-blue-400 to-purple-400 border-b-4 border-white'
+            : 'text-gray-100 hover:bg-white hover:text-blue-700 hover:shadow-md'
+        }`}
+        onClick={() => handleTabClick(tab.name)}
+      >
+        <span className="mr-3 text-xl">{tab.icon}</span>
+        {tab.name}
+      </button>
+    ))}
+  </div>
+</div>
+
   
     {/* Tab Content */}
     <div
@@ -1440,14 +1529,17 @@ const Hometab = () => {
       showContent ? 'opacity-100 visible' : 'opacity-0 invisible'
     } transition-opacity duration-300 mt-4`} // Removed fixed position and added margin-top
   >
-    <div className=" bg-white  rounded-tl-xl rounded-tr-xl shadow-md border-t-8 border-red-500 fixed bottom-0 left-0 right-0 z-50 transition-all duration-300">
+    <div className=" bg-white  rounded-tl-xl rounded-tr-xl shadow-md border-t-8 border-red-500 fixed bottom-12 left-0 right-0 z-50 transition-all duration-300">
+    
     <button
           onClick={() => setShowContent(false)}
           className="absolute -top-10 right-2 text-2xl mb-2 text-red-600 hover:text-red-800"
         >
           <FaTimes />
         </button>
+        
   <div className="">
+
     {activeTabComponent}
   </div>
   </div>

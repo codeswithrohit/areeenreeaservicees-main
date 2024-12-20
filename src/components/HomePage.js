@@ -28,10 +28,14 @@ const HomeTab = () => {
     },
     {
       id: 4,
-      imageUrl: "banner4.png",
+      imageUrl: "banner6.png",
     },
     {
       id: 5,
+      imageUrl: "banner4.png",
+    },
+    {
+      id: 6,
       imageUrl: "banner5.png",
     },
     // {
@@ -167,12 +171,12 @@ const HomeTab = () => {
 
   return (
     <div>
-      <section id="hero" className="relative md:mt-0 mt-36 md:h-[430px] sm:h-[100px] ">
+      <section id="hero" className="relative md:mt-0 mt-36 md:h-[360px] h-[100px] ">
       <div className="absolute md:top-10 -top-16 left-0 ">
           <img
             src={imageList[currentImageIndex].imageUrl}
             alt={`Slide ${currentImageIndex + 1}`}
-            className=" object-contain"
+        className="w-full h-[24vh] md:h-[40vh] lg:h-[40vh] object-fill"
           />
         </div>
   {/* <div className="relative z-10 max-w-[90%] lg:max-w-[85%] mx-auto grid place-content-center h-full">

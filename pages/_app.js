@@ -75,9 +75,11 @@ const MyApp = ({ Component, pageProps }) => {
       </Head>
       {showHeaderFooterMobileMenu && (
         <Fragment>
+           <Hometab/>
           <MobileMenu />
+          
           <Header1 />
-          <Hometab/>
+         
         </Fragment>
       )}
       

@@ -139,7 +139,7 @@ console.log("userDataaa",userData)
             <p className="text-sm font-semibold text-teal-600 uppercase">
               Featured Properties
             </p>
-            <h1 className="text-4xl font-extrabold text-gray-900">Recommended for You</h1>
+            <h1 className="md:text-4xl text-xl font-extrabold text-gray-900">Recommended for You</h1>
           </div>
           <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4  justify-center">
   {[
@@ -178,7 +178,7 @@ console.log("userDataaa",userData)
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition"
+                  className="bg-white shadow-lg rounded-xl border-t-2 border0emerald-500 overflow-hidden hover:shadow-2xl transition"
                 >
                   <div className="relative h-48">
                     {item.roomTypes?.[0]?.images?.[0] || item.propertytypes?.[0]?.images?.[0] ? (
@@ -196,7 +196,7 @@ console.log("userDataaa",userData)
                       </div>
                     )}
                   </div>
-                  <div className="p-5">
+                  <div className="px-4 py-3">
                     <h3 className="text-xl font-bold text-gray-800 truncate">
                       {item.ResortName || item.Propertyname || item.PGName || item.HotelName || item.BanqueethallName || 'N/A'}
                     </h3>
@@ -206,8 +206,8 @@ console.log("userDataaa",userData)
                   {calculateAverageRating(item.reviews)} / 5
                 </span>
               </div>
-                    <p className="text-sm text-gray-500 flex items-center mt-2">
-                      <FaMapMarkerAlt className="text-teal-500 mr-2" />
+                    <p className="text-xs font-bold text-gray-900 flex items-center mt-2">
+                      <FaMapMarkerAlt className="text-teal-500  text-2xl mr-2" />
                       {item.nearby}, {item.district}
                     </p>
                     <div className="mt-4">

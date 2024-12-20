@@ -112,22 +112,18 @@ const Index = ({userData}) => {
       
       {/* Statistics Section */}
       <div className="bg-white p-4 min-h-[150px] flex items-center justify-center font-[sans-serif] text-[#333]">
-        <div className="bg-white shadow-[0_4px_24px_-8px_rgba(0,0,0,0.2)] grid lg:grid-cols-4 sm:grid-cols-2 sm:gap-24 gap-12 rounded-3xl px-20 py-10">
+        <div className="bg-white shadow-[0_4px_24px_-8px_rgba(0,0,0,0.2)] grid lg:grid-cols-3 grid-cols-3 sm:gap-24 gap-12 rounded-3xl px-4 md:px-20 py-4 md:py-10">
           <div className="text-center">
-            <h3 className="text-4xl font-extrabold">5.4<span className="text-blue-600">M+</span></h3>
-            <p className="text-gray-500 font-semibold mt-3">Total Users</p>
+            <h3 className="md:text-4xl text-xs font-extrabold">5.4<span className="text-emerald-600">M+</span></h3>
+            <p className="text-gray-900 md:text-4xl text-xs font-bold mt-3">Monthly Users</p>
           </div>
           <div className="text-center">
-            <h3 className="text-4xl font-extrabold">$80<span className="text-blue-600">K</span></h3>
-            <p className="text-gray-500 font-semibold mt-3">Revenue</p>
+            <h3 className="md:text-4xl text-xs font-extrabold">2<span className="text-emerald-600">K+</span></h3>
+            <p className="text-gray-900 md:text-4xl text-xs font-bold mt-3">Our Properties</p>
           </div>
           <div className="text-center">
-            <h3 className="text-4xl font-extrabold">100<span className="text-blue-600">K</span></h3>
-            <p className="text-gray-500 font-semibold mt-3">Engagement</p>
-          </div>
-          <div className="text-center">
-            <h3 className="text-4xl font-extrabold">99.9<span className="text-blue-600">%</span></h3>
-            <p className="text-gray-500 font-semibold mt-3">Server Uptime</p>
+            <h3 className="md:text-4xl text-xs font-extrabold">100<span className="text-emerald-600">K</span></h3>
+            <p className="text-gray-900 md:text-4xl text-xs font-bold mt-3">New Listing Monthly</p>
           </div>
         </div>
       </div>
