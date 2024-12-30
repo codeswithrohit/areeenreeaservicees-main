@@ -224,7 +224,7 @@ console.log("data",Buydetaildata)
   };
 
   return (
-    <div className="py-6 bg-gray-50 min-h-screen">
+    <div className="py-2 bg-gray-50 min-h-screen">
     {/* Fixed Top Section */}
  
   

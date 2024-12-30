@@ -224,7 +224,7 @@ const BuyProperty = () => {
   };
 
   return (
-    <div className="py-16 bg-gray-50 min-h-screen">
+    <div className="py-2 bg-gray-50 min-h-screen">
     {/* Fixed Top Section */}
  
   

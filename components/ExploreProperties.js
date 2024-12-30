@@ -141,7 +141,7 @@ console.log("userDataaa",userData)
             </p>
             <h1 className="md:text-4xl text-xl font-extrabold text-gray-900">Recommended for You</h1>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4  justify-center">
+          <div className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2 justify-center">
   {[
     { label: 'All', value: 'All' },
     { label: 'ARENE PG', value: 'pgdetail' },
@@ -154,16 +154,17 @@ console.log("userDataaa",userData)
     <button
       key={category.value}
       onClick={() => setSelectedCategory(category.value)}
-      className={`md:px-6 md:py-2 px-2 py-2 rounded-md mb-4 text-xs md:text-sm font-medium ${
+      className={`md:px-4 md:py-1 px-1 py-2 rounded-lg mb-1 text-xs md:text-sm font-semibold transition-transform transform ${
         selectedCategory === category.value
-          ? 'bg-teal-600 text-white'
-          : 'bg-gray-200 text-gray-700'
-      } hover:bg-teal-500 hover:text-white transition`}
+          ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg scale-105'
+          : 'bg-gradient-to-r from-gray-300 to-gray-200 text-gray-700 hover:bg-gradient-to-r hover:from-teal-500 hover:to-teal-400 hover:text-white'
+      } hover:scale-105 focus:outline-none`}
     >
       {category.label}
     </button>
   ))}
 </div>
+
 
 
 

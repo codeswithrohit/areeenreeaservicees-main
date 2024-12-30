@@ -10,6 +10,8 @@ const AboutAreneServices = () => {
             Welcome to <span className="text-emerald-600 font-semibold">Arene Services</span>,where convenience meets versatility! We are your one-stop solution for a wide array of essential services designed to simplify your life. At Arene, we believe in delivering exceptional experiences across multiple domains, ensuring that whatever your need, we have you covered—all at nominal or negligible charges for the extraordinary services we provide.
 
           </p>
+
+          <img className='h-full w-full' src='/about.png' />
           
           <h2 className="text-2xl font-semibold text-gray-700 mt-8 mb-4">Our Services</h2>
           <div className="space-y-6">

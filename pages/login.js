@@ -1,118 +1,171 @@
-
 import React, { useState } from 'react';
-import { firebase } from '../Firebase/config';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
-import 'tailwindcss/tailwind.css'
+import { firebase } from '../Firebase/config';
+import {toast, ToastContainer } from 'react-toastify';
+
 const Login = () => {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      setLoading(false);
-      toast.success('Logged in successfully');
-      router.push('/'); // Redirect to home page after successful login
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await firebase.auth().signInWithPopup(provider);
+      const user = result.user;
+
+      if (user) {
+        const userRef = firebase.firestore().collection('Users').doc(user.uid);
+        const doc = await userRef.get();
+
+        if (doc.exists) {
+          toast.success('Google Sign-In Successful!');
+          router.push('/');
+        } else {
+          toast.error('User not found ');
+          router.push('/register');
+        }
+      }
     } catch (error) {
+      console.error('Google Sign-In Error:', error.message);
+      toast.error(`Google Sign-In Failed: ${error.message}`);
+    } finally {
       setLoading(false);
-      console.error('Error signing in:', error.message);
-      toast.error('Failed to sign in. Please try again.');
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleEmailPasswordSignIn = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const provider = new firebase.auth.GoogleAuthProvider();
-      await firebase.auth().signInWithPopup(provider);
-      setLoading(false);
-      toast.success('Logged in with Google successfully');
-      router.push('/'); // Redirect to home page after successful login
+      const result = await firebase.auth().signInWithEmailAndPassword(email, password);
+      const user = result.user;
+
+      if (user) {
+        const userRef = firebase.firestore().collection('Users').doc(user.uid);
+        const doc = await userRef.get();
+
+        if (doc.exists) {
+          toast.success('Login Successful!');
+          router.push('/');
+        } else {
+          toast.error('User not found ');
+          router.push('/register');
+        }
+      }
     } catch (error) {
+      console.error('Email/Password Sign-In Error:', error.message);
+      toast.error(`Login Failed: ${error.message}`);
+    } finally {
       setLoading(false);
-      console.error('Error signing in with Google:', error.message);
-      toast.error('Failed to sign in with Google. Please try again.');
     }
   };
 
   return (
-    <div>
-    <section class="font-poppins ">
-    <div class="hidden py-20 text-center bg-orange-100 dark:bg-gray-700 lg:block">
-        <div class="max-w-6xl mx-auto mb-24">
-            <span class="inline-block text-base font-medium text-red-600 dark:text-orange-300">Welcome Back</span>
-            <h2 class="mb-6 font-semibold text-gray-800 text-7xl dark:text-gray-300">Login our account</h2>
-        </div>
-    </div>
-    <div class="max-w-xl mx-auto ">
-        <div class="w-full shadow-lg bg-gray-50 dark:bg-gray-800 mt-11 lg:-mt-36 lg:full p-7 rounded-3xl">
-            <span class="flex justify-end mb-8">
-                <a href="/register" class="px-4 py-3 text-sm font-medium text-gray-100 bg-orange-700 hover:text-orange-200 rounded-lg">
-                    Register Account
-                </a>
-            </span>
-            <div class="">
-                <form onSubmit={handleEmailLogin} action="" class="p-0 m-0">
-                    <div class="mb-7">
-                        <input type="email"
-                            class="w-full px-4 py-4 bg-gray-200 rounded-lg dark:bg-gray-700 lg:py-5 dark:text-gray-300 "
-                            id="email"
-                            name="email"
-                            autoComplete="email"
-                            required placeholder="Enter your email"/>
-                    </div>
-                    <div class="mb-6">
-                        <div class="relative flex items-center">
-                            <input 
-                                class="w-full px-4 py-4 bg-gray-200 rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 "
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required placeholder="Enter password"/>
-                            
-                        </div>
-                    </div>
-                    <div class="mt-6 text-right">
-                        <a href="/Forgotpassword"
-                            class="text-sm font-semibold text-orange-700 dark:text-orange-300 dark:hover:text-orange-500">
-                            forgot password?</a>
-                    </div>
-                    <button
-                        class="w-full px-4 py-4 mt-6 font-medium text-gray-200 bg-orange-700 rounded-lg dark:bg-orange-500 hover:text-orange-200 "
-                        type="submit"
-                        disabled={loading}> {loading ? 'Signing In...' : 'Sign in'}</button>
-                    <div class="py-5 text-base text-center text-gray-600 dark:text-gray-400">Or login with</div>
-                    <div className=" flex justify-center">
-              <div onClick={handleGoogleLogin}>
-                <a
-                  href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  <img
-                  
-                    className="h-6 w-6 mr-2"
-                    src="https://www.svgrepo.com/show/506498/google.svg"
-                    alt="Google Logo"
-                  />
-                  Login with Gmail
-                </a>
-              </div>
-            </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-</div>
-  )
-}
+    <div className="font-[sans-serif] bg-white flex items-center justify-center p-4">
+      <div className="max-w-6xl max-md:max-w-lg rounded-md p-6">
+        <div className="grid md:grid-cols-2 items-center gap-8">
+          <div className="max-md:order-1 lg:min-w-[450px]">
+            <img
+              src="https://readymadeui.com/signin-image.webp"
+              className="lg:w-11/12 w-full object-cover"
+              alt="login-image"
+            />
+          </div>
 
-export default Login
+          <form className="md:max-w-md w-full mx-auto">
+            <div className="mb-4">
+              <h3 className="text-4xl font-extrabold text-blue-600">Sign in</h3>
+            </div>
+
+            {/* Google Sign-In */}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 mb-6 text-sm font-semibold rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20px" className="inline mr-4" viewBox="0 0 512 512">
+                  <path fill="#fbbd00" d="M120 256c0-25.367 6.989-49.13 19.131-69.477v-86.308H52.823C18.568 144.703 0 198.922 0 256s18.568 111.297 52.823 155.785h86.308v-86.308C126.989 305.13 120 281.367 120 256z" data-original="#fbbd00" />
+                  <path fill="#0f9d58" d="m256 392-60 60 60 60c57.079 0 111.297-18.568 155.785-52.823v-86.216h-86.216C305.044 385.147 281.181 392 256 392z" data-original="#0f9d58" />
+                  <path fill="#31aa52" d="m139.131 325.477-86.308 86.308a260.085 260.085 0 0 0 22.158 25.235C123.333 485.371 187.62 512 256 512V392c-49.624 0-93.117-26.72-116.869-66.523z" data-original="#31aa52" />
+                  <path fill="#3c79e6" d="M512 256a258.24 258.24 0 0 0-4.192-46.377l-2.251-12.299H256v120h121.452a135.385 135.385 0 0 1-51.884 55.638l86.216 86.216a260.085 260.085 0 0 0 25.235-22.158C485.371 388.667 512 324.38 512 256z" data-original="#3c79e6" />
+                  <path fill="#cf2d48" d="m352.167 159.833 10.606 10.606 84.853-84.852-10.606-10.606C388.668 26.629 324.381 0 256 0l-60 60 60 60c36.326 0 70.479 14.146 96.167 39.833z" data-original="#cf2d48" />
+                  <path fill="#eb4132" d="M256 120V0C187.62 0 123.333 26.629 74.98 74.98a259.849 259.849 0 0 0-22.158 25.235l86.308 86.308C162.883 146.72 206.376 120 256 120z" data-original="#eb4132" />
+                </svg>
+              Sign in with Google
+            </button>
+
+            {/* Divider */}
+            <div className="relative flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="mx-4 text-gray-400 text-sm">OR</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            {/* Email Input */}
+            <div className="relative flex items-center">
+              <input
+                name="email"
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none"
+                placeholder="Enter email"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="relative flex items-center mt-8">
+              <input
+                name="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none"
+                placeholder="Enter password"
+              />
+            </div>
+
+            {/* Remember Me and Forgot Password */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
+              <div className="flex items-center">
+                <input id="remember-me" type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+                <label htmlFor="remember-me" className="text-gray-800 ml-3 text-sm">
+                  Remember me
+                </label>
+              </div>
+              <a href="#" className="text-blue-600 font-semibold text-sm hover:underline">
+                Forgot Password?
+              </a>
+            </div>
+
+            {/* Email/Password Sign-In Button */}
+            <div className="mt-12">
+              <button
+                type="button"
+                onClick={handleEmailPasswordSignIn}
+                disabled={loading}
+                className="w-full py-2.5 px-5 text-sm font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+              >
+                {loading ? 'Signing in...' : 'Sign in'}
+              </button>
+              <p className="text-gray-800 text-sm text-center mt-6">
+                Don't have an account?{' '}
+                <a href="/register" className="text-blue-600 font-semibold hover:underline ml-1">
+                  Register here
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+      <ToastContainer/>
+    </div>
+  );
+};
+
+export default Login;

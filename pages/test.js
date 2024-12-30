@@ -1,719 +1,313 @@
-
-import { useState, useEffect } from "react";
-import { firebase } from "../Firebase/config";
-import { useRouter } from 'next/router';
-import { toast, ToastContainer } from "react-toastify";
+import React, { useState } from 'react';
+import { firebase } from '../Firebase/config';
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaUser, FaShoppingCart, FaTshirt, FaConciergeBell, FaHome } from 'react-icons/fa';
-import Link from "next/link";
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('Profile');
+import { useRouter } from 'next/router';
+import { CSSTransition } from 'react-transition-group'; // Importing CSSTransition for animation
+
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    mobile: '',
+    address: '',
+    aadharFront: null,
+    aadharBack: null,
+    panCard: null,
+    termsAccepted: true,
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [step, setStep] = useState(1); // Track the current step
   const router = useRouter();
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-  const [bookings, setBookings] = useState(null);
-  const [cheforders, setCheforders] = useState(null);
-  const [laundryorder, setlaundryorder] = useState(null);
-  const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
-      if (authUser) {
-        setUser(authUser);
-        fetchUserData(authUser.uid);
-      } else {
-        setUser(null);
-        setUserData(null);
-        setLoading(false);
-      }
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'file' ? files[0] : type === 'checkbox' ? checked : value,
     });
-    return () => unsubscribe();
-  }, []);
-
-  const fetchUserData = async (uid) => {
-    try {
-      const userDoc = await firebase
-        .firestore()
-        .collection("Users")
-        .doc(uid)
-        .get();
-      if (userDoc.exists) {
-        const fetchedUserData = userDoc.data();
-        setUserData(fetchedUserData);
-        setMobileNumber(fetchedUserData?.mobileNumber || "");
-        setAddress(fetchedUserData?.address || "");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      setLoading(false);
-    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleEmailSignup = async (e) => {
     e.preventDefault();
+
+    if (!formData.termsAccepted) {
+      toast.error('Please accept the terms and conditions!');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      await firebase.firestore().collection("Users").doc(user.uid).update({
-        mobileNumber,
-        address,
+      const userCredential = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(formData.email, formData.password);
+      
+      const user = userCredential.user;
+      await firebase.firestore().collection('users').doc(user.uid).set({
+        name: formData.name,
+        email: formData.email,
       });
-      setEditMode(false);
-      toast.success("Profile Updated Successfully");
-      window.location.reload();
+
+      toast.success('Signup successful with Email!');
+      // Proceed to second step (document verification)
+      setStep(2); // Move to step 2
     } catch (error) {
-      console.error("Error updating user data:", error);
-      toast.error("Error updating profile");
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  const verificationMessage = userData && userData.verified
-    ? "You are verified"
-    : "Your verification is in process";
 
+  const handleGoogleSignup = async () => {
+    setIsSubmitting(true);
 
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const snapshot = await firebase.firestore().collection('bookings').where('email', '==', user.email).get();
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setBookings(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                setLoading(false);
-            }
-        };
-    
-        fetchBookings();
-    }, [user]);
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await firebase.auth().signInWithPopup(provider);
 
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const snapshot = await firebase.firestore().collection('kitchenorder').where('email', '==', user.email).get();
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setCheforders(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                setLoading(false);
-            }
-        };
-    
-        fetchBookings();
-    }, [user]);
-console.log("chefdata",cheforders)
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const snapshot = await firebase.firestore().collection('laundryorders').where('email', '==', user.email).get();
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setlaundryorder(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                setLoading(false);
-            }
-        };
-    
-        fetchBookings();
-    }, [user]);
-    const [propeertenquiry, SetPropertyenq] = useState([]);
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const snapshot = await firebase.firestore().collection('PropertyData').where('userid', '==', user.uid).get();
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                SetPropertyenq(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                setLoading(false);
-            }
-        };
-    
-        fetchBookings();
-    }, [user]);
-console.log("useruid","property",user,propeertenquiry)
-  const renderDetails = () => {
-    switch (activeTab) {
-      case 'Profile':
-        return (
-          <div className="text-white bg-white  ml-4">
-                <div class="flex mt-10 justify-center items-center">
-   <h1 class="text-sm font-bold text-center text-red-600">*{ verificationMessage }*</h1>
- </div>
-             <div className="flex flex-col font-sans  py-2 md:flex-row  bg-gray-white">
-         
-         <form
-           onSubmit={handleSubmit}
-           class="font-[sans-serif] m-6 w-full mx-auto"
-         >
-           {user && userData ? (
-             <div>
-               <div className="flex items-center justify-center">
-                 {userData.photoURL ? (
-                   <img
-                     src={userData.photoURL}
-                     alt="User"
-                     className="w-20 h-20 rounded-full mb-4 md:mb-8"
-                   />
-                 ) : (
-                   <FaUser className="w-20 h-20 rounded-full mb-4 md:mb-8" />
-                 )}
-               </div>
- 
-               <div class="grid sm:grid-cols-2 gap-10">
-                 <div class="relative flex items-center">
-                   <label class="text-[13px] bg-white text-black absolute px-2 top-[-10px] left-[18px] font-semibold">
-                     Name
-                   </label>
-                   <input
-                     type="text"
-                     placeholder="Enter first name"
-                     value={userData.name}
-                     readOnly
-                     class="px-4 py-3.5 bg-white text-black w-full text-sm border-2 border-gray-100 focus:border-blue-500 rounded outline-none"
-                   />
-                   <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     fill="#bbb"
-                     stroke="#bbb"
-                     class="w-[18px] h-[18px] absolute right-4"
-                     viewBox="0 0 24 24"
-                   >
-                     <circle
-                       cx="10"
-                       cy="7"
-                       r="6"
-                       data-original="#000000"
-                     ></circle>
-                     <path
-                       d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z"
-                       data-original="#000000"
-                     ></path>
-                   </svg>
-                 </div>
-                 <div class="relative flex items-center">
-                   <label class="text-[13px] bg-white text-black absolute px-2 top-[-10px] left-[18px] font-semibold">
-                     Phone No
-                   </label>
-                   <input
-                     type="number"
-                     placeholder="Enter phone no."
-                     value={editMode ? mobileNumber : userData.mobileNumber}
-                     onChange={(e) => setMobileNumber(e.target.value)}
-                     readOnly={!editMode}
-                     class="px-4 py-3.5 bg-white text-black w-full text-sm border-2 border-gray-100 focus:border-blue-500 rounded outline-none"
-                   />
-                   <svg
-                     fill="#bbb"
-                     class="w-[18px] h-[18px] absolute right-4"
-                     viewBox="0 0 64 64"
-                   >
-                     <path
-                       d="m52.148 42.678-6.479-4.527a5 5 0 0 0-6.963 1.238l-1.504 2.156c-2.52-1.69-5.333-4.05-8.014-6.732-2.68-2.68-5.04-5.493-6.73-8.013l2.154-1.504a4.96 4.96 0 0 0 2.064-3.225 4.98 4.98 0 0 0-.826-3.739l-4.525-6.478C20.378 10.5 18.85 9.69 17.24 9.69a4.69 4.69 0 0 0-1.628.291 8.97 8.97 0 0 0-1.685.828l-.895.63a6.782 6.782 0 0 0-.63.563c-1.092 1.09-1.866 2.472-2.303 4.104-1.865 6.99 2.754 17.561 11.495 26.301 7.34 7.34 16.157 11.9 23.011 11.9 1.175 0 2.281-.136 3.29-.406 1.633-.436 3.014-1.21 4.105-2.302.199-.199.388-.407.591-.67l.63-.899a9.007 9.007 0 0 0 .798-1.64c.763-2.06-.007-4.41-1.871-5.713z"
-                       data-original="#000000"
-                     ></path>
-                   </svg>
-                 </div>
-                 <div class="relative flex items-center sm:col-span-2">
-                   <label class="text-[13px] bg-white text-black absolute px-2 top-[-10px] left-[18px] font-semibold">
-                     Email
-                   </label>
-                   <input
-                     type="email"
-                     placeholder="Enter email"
-                     value={userData.email}
-                     readOnly
-                     class="px-4 py-3.5 bg-white text-black w-full text-sm border-2 border-gray-100 focus:border-blue-500 rounded outline-none"
-                   />
-                   <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     fill="#bbb"
-                     stroke="#bbb"
-                     class="w-[18px] h-[18px] absolute right-4"
-                     viewBox="0 0 682.667 682.667"
-                   >
-                     <defs>
-                       <clipPath id="a" clipPathUnits="userSpaceOnUse">
-                         <path
-                           d="M0 512h512V0H0Z"
-                           data-original="#000000"
-                         ></path>
-                       </clipPath>
-                     </defs>
-                     <g
-                       clip-path="url(#a)"
-                       transform="matrix(1.33 0 0 -1.33 0 682.667)"
-                     >
-                       <path
-                         fill="none"
-                         stroke-miterlimit="10"
-                         stroke-width="40"
-                         d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z"
-                         data-original="#000000"
-                       ></path>
-                       <path
-                         d="M472 274.9V107.999c0-11.027-8.972-20-20-20H60c-11.028 0-20 8.973-20 20V274.9L0 304.652V107.999c0-33.084 26.916-60 60-60h392c33.084 0 60 26.916 60 60v196.653Z"
-                         data-original="#000000"
-                       ></path>
-                     </g>
-                   </svg>
-                 </div>
-               </div>
-               <textarea
-                 placeholder="Address"
-                 value={editMode ? address : userData.address}
-                 onChange={(e) => setAddress(e.target.value)}
-                 readOnly={!editMode}
-                 class="px-4 py-3.5 bg-white mt-4 text-black w-full text-sm border-2 border-gray-100 focus:border-blue-500 rounded outline-none"
-                 rows="4"
-               ></textarea>
- 
-               <div className="flex justify-center mt-4">
-                 <button
-                   type="button"
-                   onClick={() => setEditMode(true)}
-                   className={`mr-4 px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded hover:bg-red-600 ${
-                     editMode ? "hidden" : "block"
-                   }`}
-                 >
-                   Edit Profile
-                 </button>
-                 <button
-                   type="submit"
-                   className={`px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded hover:bg-red-600 ${
-                     editMode ? "block" : "hidden"
-                   }`}
-                 >
-                   Submit
-                 </button>
-              
-             
-               </div>
-             </div>
-           ) : (
-            <div className="flex justify-center items-center h-screen">
-          <button type="button"
-            className="px-6 py-2.5 rounded-full text-white text-sm tracking-wider font-semibold border-none outline-none bg-[#43d3b0] hover:bg-orange-700 active:bg-[#43d3b0]">
-            Loading
-            <svg xmlns="http://www.w3.org/2000/svg" width="18px" fill="#fff" className="ml-2 inline animate-spin" viewBox="0 0 24 24">
-              <path fillRule="evenodd"
-                d="M7.03 2.757a1 1 0 0 1 1.213-.727l4 1a1 1 0 0 1 .59 1.525l-2 3a1 1 0 0 1-1.665-1.11l.755-1.132a7.003 7.003 0 0 0-2.735 11.77 1 1 0 0 1-1.376 1.453A8.978 8.978 0 0 1 3 12a9 9 0 0 1 4.874-8l-.117-.03a1 1 0 0 1-.727-1.213zm10.092 3.017a1 1 0 0 1 1.376-1.453A8.978 8.978 0 0 1 21 12a9 9 0 0 1-4.874 8l.117.03a1 1 0 0 1 .727 1.213 1 1 0 0 1-1.213.727l-4-1a1 1 0 0 1-.59-1.525l2-3a1 1 0 0 1 1.665 1.11l-.755 1.132a7.003 7.003 0 0 0 2.735-11.77z"
-                clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
-           )}
-         </form>
-         <ToastContainer />
-       </div>
-          </div>
-        );
-      case 'Booking':
-        return (
-          <div className="text-white mt-4 ml-4">
-          <div>
-            <section className="container mx-auto px-6 lg:py-16 py-36 font-mono">
-                <h1 className='text-red-600 text-center font-bold text-4xl'>Our Orders</h1>
-                {loading && <div className="flex justify-center items-center h-screen">
-          <button type="button"
-            className="px-6 py-2.5 rounded-full text-white text-sm tracking-wider font-semibold border-none outline-none bg-[#43d3b0] hover:bg-orange-700 active:bg-[#43d3b0]">
-            Loading
-            <svg xmlns="http://www.w3.org/2000/svg" width="18px" fill="#fff" className="ml-2 inline animate-spin" viewBox="0 0 24 24">
-              <path fillRule="evenodd"
-                d="M7.03 2.757a1 1 0 0 1 1.213-.727l4 1a1 1 0 0 1 .59 1.525l-2 3a1 1 0 0 1-1.665-1.11l.755-1.132a7.003 7.003 0 0 0-2.735 11.77 1 1 0 0 1-1.376 1.453A8.978 8.978 0 0 1 3 12a9 9 0 0 1 4.874-8l-.117-.03a1 1 0 0 1-.727-1.213zm10.092 3.017a1 1 0 0 1 1.376-1.453A8.978 8.978 0 0 1 21 12a9 9 0 0 1-4.874 8l.117.03a1 1 0 0 1 .727 1.213 1 1 0 0 1-1.213.727l-4-1a1 1 0 0 1-.59-1.525l2-3a1 1 0 0 1 1.665 1.11l-.755 1.132a7.003 7.003 0 0 0 2.735-11.77z"
-                clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
-}
-{!loading && bookings.length === 0 && (
-          <p className="text-black text-center mt-4">No Orders. Please make an order.</p>
-        )}
-                {!loading && bookings && bookings.length > 0 && (
-                    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-                        <div class="w-full overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 font-[sans-serif]">
-    <thead class="bg-gray-100 whitespace-nowrap">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Customer Name
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Order Details
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Payment
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Booking Date
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-200 whitespace-nowrap">
-    {bookings && bookings.map(booking => (
-      <tr key={booking.id} >
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Name}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Propertyname}-{booking.roomType}-{booking.roomprice}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Payment}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <dl className="grid sm:flex gap-x-3 text-sm">
-                <dt className="min-w-36 max-w-[200px] text-gray-500">Check In date:</dt>
-                <dd className="font-medium text-gray-800 dark:text-gray-200">{booking.bookingDate.checkInDate}</dd>
-              </dl>
-              {booking.bookingDate.checkOutDate && (
-  <dl className="grid sm:flex gap-x-3 text-sm">
-    <dt className="min-w-36 max-w-[200px] text-gray-500">Check Out date:</dt>
-    <dd className="font-medium text-gray-800 dark:text-gray-200">{booking.bookingDate.checkOutDate}</dd>
-  </dl>
-)}
+      const user = result.user;
+      await firebase.firestore().collection('users').doc(user.uid).set({
+        name: user.displayName || 'No Name',
+        email: user.email,
+      });
 
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <Link href={`/bookingdetails?orderId=${booking.orderId}`}>
-                                                                            <a className="bg-blue-500 text-white px-2 py-1 rounded">
-                                                                                Booking Details
-                                                                            </a>
-                                                                        </Link>
-        </td>
-      </tr>
-    ))}
-    </tbody>
-  </table>
-                        </div>
-                    </div>
-                )}
-            </section>
-        </div>
-          </div>
-        );
-      case 'Laundry Booking':
-        return (
-          <div className="text-white mt-4 ml-4">
-              <section className="container mx-auto px-6 lg:py-16 py-36 font-mono">
-                <h1 className='text-red-600 text-center font-bold text-4xl'>Our Orders</h1>
-                {loading && <div className="flex justify-center items-center h-screen">
-          <button type="button"
-            className="px-6 py-2.5 rounded-full text-white text-sm tracking-wider font-semibold border-none outline-none bg-[#43d3b0] hover:bg-orange-700 active:bg-[#43d3b0]">
-            Loading
-            <svg xmlns="http://www.w3.org/2000/svg" width="18px" fill="#fff" className="ml-2 inline animate-spin" viewBox="0 0 24 24">
-              <path fillRule="evenodd"
-                d="M7.03 2.757a1 1 0 0 1 1.213-.727l4 1a1 1 0 0 1 .59 1.525l-2 3a1 1 0 0 1-1.665-1.11l.755-1.132a7.003 7.003 0 0 0-2.735 11.77 1 1 0 0 1-1.376 1.453A8.978 8.978 0 0 1 3 12a9 9 0 0 1 4.874-8l-.117-.03a1 1 0 0 1-.727-1.213zm10.092 3.017a1 1 0 0 1 1.376-1.453A8.978 8.978 0 0 1 21 12a9 9 0 0 1-4.874 8l.117.03a1 1 0 0 1 .727 1.213 1 1 0 0 1-1.213.727l-4-1a1 1 0 0 1-.59-1.525l2-3a1 1 0 0 1 1.665 1.11l-.755 1.132a7.003 7.003 0 0 0 2.735-11.77z"
-                clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
-}
-{!loading && laundryorder.length === 0 && (
-          <p className="text-black text-center mt-4">No Orders. Please make an order.</p>
-        )}
-                {!loading && laundryorder && laundryorder.length > 0 && (
-                    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-                        <div class="w-full overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 font-[sans-serif]">
-    <thead class="bg-gray-100 whitespace-nowrap">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Customer Name
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-      Service
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Order Details
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Payment
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Booking Date
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-200 whitespace-nowrap">
-    {bookings && bookings.map(booking => (
-      <tr key={booking.id} >
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Name}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Service}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <div>
-                    <p>No. of Garments: {booking.Noofgarment}</p>
-                    <p>Tenure: {booking.selectedTenure}</p>
-                    <p>Price: {booking.totalpayment}</p>
-                </div>
-        
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Payment}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.bookingDate instanceof Object ? (
-    // If bookingDate is an object, extract checkIn or checkOut
-    <>
-        <p>Check In: {booking.bookingDate.checkIn}</p>
-        {booking.bookingDate.checkOut ? (
-            <p>Check Out: {booking.bookingDate.checkOut}</p>
-  ) : null}
-    </>
-) : (
-    // If bookingDate is a string, display it directly
-    <p>{booking.bookingDate}</p>
-)}
-
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <Link href={`/laundrybookingdetails?orderId=${booking.orderId}`}>
-                                                                            <a className="bg-blue-500 text-white px-2 py-1 rounded">
-                                                                                View Details
-                                                                            </a>
-                                                                        </Link>
-        </td>
-      </tr>
-    ))}
-    </tbody>
-  </table>
-                        </div>
-                    </div>
-                )}
-            </section>
-          </div>
-        );
-      case 'Aren Chef Booking':
-        return (
-          <div className="text-white mt-4 ml-4">
-            <div>
-            <section className="container mx-auto px-6 lg:py-16 py-36 font-mono">
-                <h1 className='text-red-600 text-center font-bold text-4xl'>Our Orders</h1>
-                {loading &&  <div className="flex justify-center items-center h-screen">
-          <button type="button"
-            className="px-6 py-2.5 rounded-full text-white text-sm tracking-wider font-semibold border-none outline-none bg-[#43d3b0] hover:bg-orange-700 active:bg-[#43d3b0]">
-            Loading
-            <svg xmlns="http://www.w3.org/2000/svg" width="18px" fill="#fff" className="ml-2 inline animate-spin" viewBox="0 0 24 24">
-              <path fillRule="evenodd"
-                d="M7.03 2.757a1 1 0 0 1 1.213-.727l4 1a1 1 0 0 1 .59 1.525l-2 3a1 1 0 0 1-1.665-1.11l.755-1.132a7.003 7.003 0 0 0-2.735 11.77 1 1 0 0 1-1.376 1.453A8.978 8.978 0 0 1 3 12a9 9 0 0 1 4.874-8l-.117-.03a1 1 0 0 1-.727-1.213zm10.092 3.017a1 1 0 0 1 1.376-1.453A8.978 8.978 0 0 1 21 12a9 9 0 0 1-4.874 8l.117.03a1 1 0 0 1 .727 1.213 1 1 0 0 1-1.213.727l-4-1a1 1 0 0 1-.59-1.525l2-3a1 1 0 0 1 1.665 1.11l-.755 1.132a7.003 7.003 0 0 0 2.735-11.77z"
-                clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
-}
-{!loading && cheforders.length === 0 && (
-          <p className="text-black text-center mt-4">No Orders. Please make an order.</p>
-        )}
-                {!loading && cheforders && cheforders.length > 0 && (
-                    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-                        <div class="w-full overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 font-[sans-serif]">
-    <thead class="bg-gray-100 whitespace-nowrap">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Customer Name
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-       Thalli Name
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Order Details
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Payment
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Booking Date
-        </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-200 whitespace-nowrap">
-    {cheforders && cheforders.map(booking => (
-      <tr key={booking.id} >
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.firstName}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.thaliname}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <div>
-                    <p>No. of Thalli: {booking.noofthalli}</p>
-                    <p>Tenure: {booking.selectedTenure}</p>
-                    <p>Price: {booking.Foodcharge}</p>
-                </div>
-        
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.Payment}
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        {booking.bookingDate instanceof Object ? (
-    // If bookingDate is an object, extract checkIn or checkOut
-    <>
-        <p>Check In: {booking.bookingDate.checkIn}</p>
-        {booking.bookingDate.checkOut ? (
-            <p>Check Out: {booking.bookingDate.checkOut}</p>
-  ) : null}
-    </>
-) : (
-    // If bookingDate is a string, display it directly
-    <p>{booking.bookingDate}</p>
-)}
-
-        </td>
-        <td class="px-6 py-4 text-sm text-[#333]">
-        <Link href={`/arenechefdetails?orderId=${booking.orderId}`}>
-                                                                            <a className="bg-blue-500 text-white px-2 py-1 rounded">
-                                                                                Booking Details
-                                                                            </a>
-                                                                        </Link>
-        </td>
-      </tr>
-    ))}
-    </tbody>
-  </table>
-                        </div>
-                    </div>
-                )}
-            </section>
-        </div>
-          </div>
-        );
-        case 'Propert Enquiry':
-          return (
-            <div className="text-white mt-4 ml-4">
-              <div>
-              <section className="container mx-auto px-6 lg:py-16 py-36 font-mono">
-                  <h1 className='text-red-600 text-center font-bold text-4xl'>Property Enquiry</h1>
-                  <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="w-full bg-gray-200 text-gray-600">
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Name</th>
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Phone</th>
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Property Name</th>
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Property Location</th>
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Confimation Status</th>
-                <th className="py-3 px-4 border-b border-gray-300 text-left">Enquiry Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {propeertenquiry.map((item) => (
-                <tr key={item.id}>
-                  <td className="py-3 px-4 border-b text-black border-gray-300">{item.name}</td>
-                  <td className="py-3 px-4 border-b text-black border-gray-300">{item.phone}</td>
-                  <td className="py-3 px-4 border-b text-black border-gray-300">{item.propertyname}</td>
-                  <td className="py-3 px-4 border-b text-black border-gray-300 text-xs">{item.propertylocation}</td>
-                  <td className="py-3 px-4 border-b text-black border-gray-300 text-xs">
-  {item.confirmstatus ? item.confirmstatus : '------'}
-</td>
-
-                  <td className="py-3 px-4 border-b text-black border-gray-300">{item.enquiryDate}</td>
-                
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-              </section>
-          </div>
-            </div>
-          );
-      default:
-        return null;
+      toast.success('Signup successful with Google!');
+      // Proceed to second step (document verification)
+      setStep(2); // Move to step 2
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  const handlePostProperty = () => {
-    if (userData && userData.verified) {
-      // User is verified, proceed with posting property
-      router.push('/PostProperty')
-      // Replace this line with actual logic to post property
-    } else {
-      // User is not verified
-      toast.error("You are not a verified user. Verification is under process.Contact on 9871713129 number to post your property");
+
+  const handleDocumentUpload = async () => {
+    if (!formData.aadharFront || !formData.aadharBack || !formData.panCard) {
+      toast.error('Please upload all required documents!');
+      return;
+    }
+
+    // Check file sizes (minimum 300KB)
+    const files = [
+      { file: formData.aadharFront, name: 'aadharFront' },
+      { file: formData.aadharBack, name: 'aadharBack' },
+      { file: formData.panCard, name: 'panCard' },
+    ];
+
+    for (const { file, name } of files) {
+      if (file && file.size < 300 * 1024) { // File size less than 300KB
+        toast.error(`${name} must be at least 300KB`);
+        return;
+      }
+    }
+
+    const storageRef = firebase.storage().ref();
+
+    const uploadFile = async (file, fileName) => {
+      const fileRef = storageRef.child(`documents/${fileName}`);
+      const uploadTask = fileRef.put(file);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(progress);
+          },
+          reject,
+          resolve
+        );
+      });
+    };
+
+    try {
+      await Promise.all([
+        uploadFile(formData.aadharFront, 'aadharFront.jpg'),
+        uploadFile(formData.aadharBack, 'aadharBack.jpg'),
+        uploadFile(formData.panCard, 'panCard.jpg'),
+      ]);
+
+      toast.success('Documents uploaded successfully!');
+      router.push('/login');
+    } catch (error) {
+      toast.error(`Error uploading documents: ${error.message}`);
     }
   };
+
   return (
-    <div className='flex flex-col md:flex-row h-screen md:mt-6 mt-28'>
-      <div className="bg-gray-800 text-white w-full md:w-64 flex-shrink-0">
-        <h1 className='text-white font-bold text-lg text-center mb-4 mt-12'>Dashboard</h1>
-        <ul className="flex flex-wrap md:flex-col md:flex-nowrap space-y-1 md:space-y-0 grid grid-cols-3 md:grid-cols-1 gap-4">
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Profile' ? 'bg-white text-black font-bold ' : 'hover:bg-gray-700'}`}
-            onClick={() => handleTabClick('Profile')}
-          >
-            <FaUser className="w-6 h-6 mr-2" />
-            Profile
-          </li>
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Booking' ? 'bg-white text-black font-bold' : 'hover:bg-gray-700'}`}
-            onClick={() => handleTabClick('Booking')}
-          >
-            <FaShoppingCart className="w-6 h-6 mr-2" />
-            Booking
-          </li>
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Laundry Booking' ? 'bg-white text-black font-bold' : 'hover:bg-gray-700'}`}
-            onClick={() => handleTabClick('Laundry Booking')}
-          >
-            <FaTshirt className="w-6 h-6 mr-2" />
-            Arene Laundry
-          </li>
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Aren Chef Booking' ? 'bg-white text-black font-bold' : 'hover:bg-gray-700'}`}
-            onClick={() => handleTabClick('Aren Chef Booking')}
-          >
-            <FaConciergeBell className="w-6 h-6 mr-2" />
-            Aren Chef
-          </li>
-          
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Aren Chef Booking' ? 'bg-white text-black font-bold' : 'hover:bg-gray-700'}`}
-           
-          >
-            <a onClick={handlePostProperty}  className="flex">
-            <FaHome className="w-6 h-6 mr-2" />
-           Post Property
-           </a>
-          </li>
-          <li
-            className={`flex items-center pl-2 py-1 cursor-pointer transition-all ${activeTab === 'Propert Enquiry' ? 'bg-white text-black font-bold' : 'hover:bg-gray-700'}`}
-            onClick={() => handleTabClick('Propert Enquiry')}
-          >
-             <FaHome className="w-6 h-6 mr-2" />
-            Property Enquiry
-          </li>
-        </ul>
-      </div>
+    <div className="font-[sans-serif] bg-white md:h-screen">
+      <div className="grid md:grid-cols-2 items-center gap-8 h-full">
+        <div className="max-md:order-1 p-4 bg-gray-50 h-full">
+          <img
+            src="https://readymadeui.com/signin-image.webp"
+            className="lg:max-w-[90%] w-full h-full object-contain block mx-auto"
+            alt="login-image"
+          />
+        </div>
 
-      <div className="flex-1 bg-white">
-        {renderDetails()}
+        <div className="flex items-center p-6 h-full w-full">
+          <form className="max-w-lg w-full mx-auto" onSubmit={handleEmailSignup}>
+            <h3 className="text-blue-500 md:text-3xl text-2xl font-extrabold text-center mb-6">
+              Create an account
+            </h3>
+
+            {/* Google Signup */}
+            <button
+              type="button"
+              onClick={handleGoogleSignup}
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 mb-6 text-sm font-semibold rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" className="inline mr-4" viewBox="0 0 512 512">
+                  <path fill="#fbbd00" d="M120 256c0-25.367 6.989-49.13 19.131-69.477v-86.308H52.823C18.568 144.703 0 198.922 0 256s18.568 111.297 52.823 155.785h86.308v-86.308C126.989 305.13 120 281.367 120 256z" data-original="#fbbd00" />
+                  <path fill="#0f9d58" d="m256 392-60 60 60 60c57.079 0 111.297-18.568 155.785-52.823v-86.216h-86.216C305.044 385.147 281.181 392 256 392z" data-original="#0f9d58" />
+                  <path fill="#31aa52" d="m139.131 325.477-86.308 86.308a260.085 260.085 0 0 0 22.158 25.235C123.333 485.371 187.62 512 256 512V392c-49.624 0-93.117-26.72-116.869-66.523z" data-original="#31aa52" />
+                  <path fill="#3c79e6" d="M512 256a258.24 258.24 0 0 0-4.192-46.377l-2.251-12.299H256v120h121.452a135.385 135.385 0 0 1-51.884 55.638l86.216 86.216a260.085 260.085 0 0 0 25.235-22.158C485.371 388.667 512 324.38 512 256z" data-original="#3c79e6" />
+                  <path fill="#cf2d48" d="m352.167 159.833 10.606 10.606 84.853-84.852-10.606-10.606C388.668 26.629 324.381 0 256 0l-60 60 60 60c36.326 0 70.479 14.146 96.167 39.833z" data-original="#cf2d48" />
+                  <path fill="#eb4132" d="M256 120V0C187.62 0 123.333 26.629 74.98 74.98a259.849 259.849 0 0 0-22.158 25.235l86.308 86.308C162.883 146.72 206.376 120 256 120z" data-original="#eb4132" />
+                </svg>
+              Sign up with Google
+            </button>
+
+            {/* Divider */}
+            <div className="relative flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="text-gray-500 text-lg px-4">OR</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            {/* Step 1 (Email and Password Signup) */}
+            <CSSTransition in={step === 1} timeout={300} classNames="fade" unmountOnExit>
+              <div className={`flex flex-col gap-4 ${step === 1 ? 'block' : 'hidden'}`}>
+                <input
+                  className="w-full p-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="name"
+                  type="text"
+                  placeholder="Enter Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  className="w-full p-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="email"
+                  type="email"
+                  placeholder="Enter Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  className="w-full p-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="password"
+                  type="password"
+                  placeholder="Enter Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+
+                {/* Terms and Conditions */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={handleChange}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-600">
+                    I accept the{' '}
+                    <a href="#" className="text-blue-600">terms and conditions</a>.
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  className={`w-full py-3 bg-blue-600 text-white rounded-md ${isSubmitting ? 'opacity-50' : ''}`}
+                  disabled={isSubmitting}
+                >
+                  Sign Up
+                </button>
+              </div>
+            </CSSTransition>
+
+            {/* Step 2 (Document Upload) */}
+      {/* Step 2 (Mobile Number & Document Upload) */}
+<CSSTransition in={step === 2} timeout={300} classNames="fade" unmountOnExit>
+  <div className="flex flex-col gap-4">
+    {/* Mobile Number */}
+    <input
+      className="w-full p-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      name="mobile"
+      type="tel"
+      placeholder="Enter Mobile Number"
+      value={formData.mobile}
+      onChange={handleChange}
+      required
+    />
+
+    {/* Aadhar Front Upload */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Front</label>
+      <input
+        className="w-full p-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        name="aadharFront"
+        type="file"
+        accept="image/*"
+        onChange={handleChange}
+        required
+      />
+    </div>
+
+    {/* Aadhar Back Upload */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Back</label>
+      <input
+        className="w-full p-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        name="aadharBack"
+        type="file"
+        accept="image/*"
+        onChange={handleChange}
+        required
+      />
+    </div>
+
+    {/* PAN Card Upload */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">PAN Card</label>
+      <input
+        className="w-full p-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        name="panCard"
+        type="file"
+        accept="image/*"
+        onChange={handleChange}
+        required
+      />
+    </div>
+
+    {/* Upload Button */}
+    <button
+      type="button"
+      onClick={handleDocumentUpload}
+      className={`w-full py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition ${
+        isSubmitting ? 'opacity-50' : ''
+      }`}
+      disabled={isSubmitting}
+    >
+      {isSubmitting ? 'Uploading...' : 'Upload Documents'}
+    </button>
+  </div>
+</CSSTransition>
+
+          </form>
+        </div>
       </div>
-      <ToastContainer/>
     </div>
   );
 };
 
-export default Dashboard;
+export default Register;

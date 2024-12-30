@@ -10,6 +10,7 @@ import OurService from "../components/OurService";
 import { useLoadScript } from '@react-google-maps/api';
 import { useRouter } from 'next/router';
 import WatchHistory from "../components/WatchHistory";
+import Hometab from "../components/Hometab";
 
 const Counter = dynamic(() => import("../src/components/Counter"), {
   ssr: false,
@@ -105,6 +106,7 @@ const Index = ({userData}) => {
       {/* Home Page */}
      
       <HomePage />
+      <Hometab/>
       {/* Explore City Section */}
       <Explorecity />
       {/* Explore Properties Section with fetched location */}

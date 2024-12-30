@@ -1445,110 +1445,165 @@ const ArenaChefContent = ({setShowContent}) => {
 const Hometab = () => {
   const [activeTab, setActiveTab] = useState('PG');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showContent, setShowContent] = useState(true); 
+  const [showContent, setShowContent] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the current route is the homepage or any other route
     if (router.pathname === '/') {
-      setActiveTab('PG'); // Set 'PG' tab as the default if on the homepage
+      setActiveTab('PG');
     } else {
-      setActiveTab(''); // Set the active tab as blank for other pages
+      setActiveTab('');
     }
   }, [router.pathname]);
+
   const tabs = [
-    { name: 'PG', icon: <FaHome />, component: <PGContent setShowContent={setShowContent} /> },
-    { name: 'BUY PROPERTIES', icon: <MdRealEstateAgent />, component: <BuyPropertiesContent /> },
-    { name: 'RENT PROPERTIES', icon: <FaBuilding />, component: <RentPropertiesContent /> },
-    { name: 'ARENE ROOM', icon: <FaHotel />, component: <ArenaRoomContent /> },
-    { name: 'BANQUET HALLS', icon: <FaBuilding />, component: <BanquetHallsContent /> },
-    { name: 'RESORT', icon: <FaStore />, component: <ResortContent /> },
-    { name: 'ARENE LAUNDRY', icon: <FaShower />, component: <ArenaLaundryContent /> },
-    { name: 'ARENE CHEF', icon: <FaUtensils />, component: <ArenaChefContent /> },
+    { 
+      name: 'PG', 
+      icon: <FaHome />, 
+      component: <PGContent setShowContent={setShowContent} />, 
+      title:"Your Home Away from Home",
+      subtitle: "Affordable and comfortable PG accommodations for students and professionals." 
+    },
+    { 
+      name: 'BUY PROPERTIES', 
+      icon: <MdRealEstateAgent />, 
+      component: <BuyPropertiesContent />, 
+      title:"Invest in Your Future",
+      subtitle: "Find your dream property with exclusive deals and trusted listings." 
+    },
+    { 
+      name: 'RENT PROPERTIES', 
+      icon: <FaBuilding />, 
+      component: <RentPropertiesContent />, 
+      title:"Find Your Ideal Rental Home",
+      subtitle: "Browse a variety of rental homes, apartments, and spaces suited for every lifestyle." 
+    },
+    { 
+      name: 'ARENA ROOM', 
+      icon: <FaHotel />, 
+      component: <ArenaRoomContent />, 
+      title:"Stay Comfortably, Live Conveniently",
+      subtitle: "Book cozy and budget-friendly rooms for your next stay" 
+    },
+    { 
+      name: 'BANQUET HALLS', 
+      icon: <FaBuilding />, 
+      component: <BanquetHallsContent />, 
+      title:"Make Your Event Unforgettable",
+      subtitle: "Elegant banquet halls designed for weddings, parties, and corporate gatherings." 
+    },
+    { 
+      name: 'RESORT', 
+      icon: <FaStore />, 
+      component: <ResortContent />, 
+      title:"Escape to Paradise",
+      subtitle: "Indulge in luxury and tranquility at stunning resort destinations." 
+    },
+    { 
+      name: 'ARENA LAUNDRY', 
+      icon: <FaShower />, 
+      component: <ArenaLaundryContent />, 
+      title:"Fresh Clothes, Fresh Day",
+      subtitle: "Quick and reliable laundry services at your doorstep." 
+    },
+    { 
+      name: 'ARENA CHEF', 
+      icon: <FaUtensils />, 
+      component: <ArenaChefContent />, 
+      title:"Delicious Meals, Anytime, Anywhere",
+      subtitle: "Experience chef-prepared gourmet meals delivered right to your doorstep." 
+    },
   ];
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleTabClick = (tabName) => {
     if (activeTab === tabName && showContent) {
-      // If the clicked tab is already active and content is visible, hide it
       setShowContent(false);
-      setTimeout(() => setActiveTab(null), 300); // Optional: delay resetting activeTab for a smoother transition
+      setTimeout(() => setActiveTab(null), 300);
     } else {
-      // Otherwise, show the clicked tab's content
-      setShowContent(false); // Hide any currently displayed content
+      setShowContent(true);
       setTimeout(() => {
         setActiveTab(tabName);
-        setShowContent(true); // Show new content
+        setShowContent(true);
       }, 300);
     }
   };
-  
 
-  const activeTabComponent = tabs.find((tab) => tab.name === activeTab)?.component;
+  const activeTabData = tabs.find((tab) => tab.name === activeTab);
 
   return (
-    <div className="" >
-    {/* Tab Header */}
-    <div
-  className={`bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg fixed left-0 right-0 z-10 transition-all duration-300 ${
-    isScrolled ? 'bottom-0' : 'bottom-0'
+    <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white ">
+      {/* Tab Header */}
+      <div
+  className={`bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-400 shadow-xl  left-0 right-0 z-10 transition-all duration-300 ${
+    isScrolled ? '' : ''
   }`}
 >
-  <div className="flex overflow-x-auto border-b border-transparent">
+  <div className="grid grid-cols-4 -mt-8  md:grid-cols-8 lg:grid-cols-8 gap-3 py-1 px-2 overflow-x-auto">
     {tabs.map((tab) => (
       <button
         key={tab.name}
-        className={`flex items-center px-6 py-3 text-sm font-semibold transition-colors duration-300 rounded-lg whitespace-nowrap ${
+        className={`flex items-center justify-center px-3 py-2 text-sm font-bold rounded-md whitespace-nowrap transition-all duration-300 ${
           activeTab === tab.name
-            ? 'text-white bg-gradient-to-r from-blue-400 to-purple-400 border-b-4 border-white'
-            : 'text-gray-100 hover:bg-white hover:text-blue-700 hover:shadow-md'
+            ? 'bg-gradient-to-r from-white to-emerald-200 text-emerald-700 shadow-lg scale-105'
+            : 'text-gray-200 hover:bg-gradient-to-r hover:from-emerald-600 hover:to-emerald-400 hover:text-white hover:scale-105'
         }`}
         onClick={() => handleTabClick(tab.name)}
       >
-        <span className="mr-3 text-xl">{tab.icon}</span>
-        {tab.name}
-      </button>
-    ))}
-  </div>
+     <div className="flex flex-col md:flex-row font-bold items-center space-x-2 justify-center">
+  <span className="text-lg md:text-2xl lg:text-3xl">{tab.icon}</span>
+  <span className="text-sm md:text-base lg:text-lg font-bold" style={{ fontSize: '0.550rem' }}>
+    {tab.name}
+  </span>
 </div>
 
-  
-    {/* Tab Content */}
-    <div
-    className={`${
-      showContent ? 'opacity-100 visible' : 'opacity-0 invisible'
-    } transition-opacity duration-300 mt-4`} // Removed fixed position and added margin-top
-  >
-    <div className=" bg-white  rounded-tl-xl rounded-tr-xl shadow-md border-t-8 border-red-500 fixed bottom-12 left-0 right-0 z-50 transition-all duration-300">
-    
-    <button
-          onClick={() => setShowContent(false)}
-          className="absolute -top-10 right-2 text-2xl mb-2 text-red-600 hover:text-red-800"
-        >
-          <FaTimes />
-        </button>
-        
-  <div className="">
+   
 
-    {activeTabComponent}
-  </div>
-  </div>
+    </button>
+  ))}
+</div>
+
 </div>
 
 
-  </div>
   
+      {/* Tab Content */}
+      <div
+  className={`transition-all duration-500 mt-0 px-0 ${
+    showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+  }`}
+>
+  {activeTabData && (
+    <div className="bg-gradient-to-br from-white to-emerald-100 rounded-none shadow-lg mt-0 px-8 py-2 relative text-gray-800">
+      {/* Title Section */}
+      <div className="mb-1 text-start">
+        <h2 className="md:text-4xl text-sm  text-transparent font-bold bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-500 mb-3">
+          {activeTabData.title}
+        </h2>
+        <h3 className="text-gray-700 md:text-xl text-xs  font-semibold mx-auto">
+          {activeTabData.subtitle}
+        </h3>
+      </div>
+
+      {/* Content Section */}
+      <div className="border-t-2 border-emerald-300  pt-1">
+        {activeTabData.component}
+      </div>
+    </div>
+  )}
+</div>
+
+    </div>
   );
+  
 };
+
 
 export default Hometab;

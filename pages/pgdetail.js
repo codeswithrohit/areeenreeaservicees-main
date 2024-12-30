@@ -214,7 +214,7 @@ console.log("selected room",selectedRoom)
 
  
   return (
-    <div className="py-16 bg-white min-h-screen">
+    <div className="py-2 bg-white min-h-screen">
     {/* Fixed Top Section */}
  
   

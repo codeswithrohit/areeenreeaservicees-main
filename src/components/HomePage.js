@@ -16,26 +16,38 @@ const HomeTab = () => {
    
     {
       id: 1,
-      imageUrl: "banner1.gif",
+      imageUrl: "z1.gif",
     },
     {
       id: 2,
-      imageUrl: "banner2.gif",
+      imageUrl: "z2.gif",
     },
     {
       id: 3,
-      imageUrl: "banner3.png",
+      imageUrl: "z3.gif",
     },
     {
       id: 4,
-      imageUrl: "banner6.png",
+      imageUrl: "z4.gif",
     },
     {
       id: 5,
-      imageUrl: "banner4.png",
+      imageUrl: "z5.gif",
     },
     {
       id: 6,
+      imageUrl: "z6.gif",
+    },
+    {
+      id: 7,
+      imageUrl: "z7.gif",
+    },
+    {
+      id: 8,
+      imageUrl: "banner4.png",
+    },
+    {
+      id: 9,
       imageUrl: "banner5.png",
     },
     // {
@@ -171,12 +183,12 @@ const HomeTab = () => {
 
   return (
     <div>
-      <section id="hero" className="relative md:mt-0 mt-36 md:h-[360px] h-[100px] ">
-      <div className="absolute md:top-10 -top-16 left-0 ">
+      <section id="hero" className="relative md:mt-0 mt-16 md:h-[360px] h-[100px] ">
+      <div className="absolute md:top-0 -top-16 left-0 ">
           <img
             src={imageList[currentImageIndex].imageUrl}
             alt={`Slide ${currentImageIndex + 1}`}
-        className="w-full h-[24vh] md:h-[40vh] lg:h-[40vh] object-fill"
+        className="w-full h-[16vh] md:h-[40vh] lg:h-[40vh] object-fill"
           />
         </div>
   {/* <div className="relative z-10 max-w-[90%] lg:max-w-[85%] mx-auto grid place-content-center h-full">

@@ -3,7 +3,9 @@ import React from 'react'
 const HeroSection = () => {
   return (
     <div>
-           <section class="lg:py-16 py-6 relative">
+          <section
+        className="lg:py-16 py-6 relative bg-[url('https://img.freepik.com/free-photo/top-view-circular-food-frame_23-2148723455.jpg?t=st=1735458622~exp=1735462222~hmac=f3cc0e97c64596a1cd1fa99fef2415db4f372aeee41b37016dbaa36edc751305&w=2000')] bg-cover bg-center bg-no-repeat"
+      >
         <div class="absolute inset-0 blur-[60px] bg-gradient-to-l from-emerald-600/20 via-emerald-600/5 to-emerald-600/0"></div>
         <div class="container relative">
             <div class="grid lg:grid-cols-2 items-center">
@@ -11,14 +13,14 @@ const HeroSection = () => {
                     <div class="flex items-center justify-center lg:justify-start order-last lg:order-first z-10">
                         <div class="text-center lg:text-start">
                             <span class="inline-flex py-2 px-4 text-sm text-primary rounded-full bg-primary/20 mb-8 lg:mb-2">#Special Food 🍇</span>
-                            <h1 class="lg:text-6xl/normal md:text-5xl/snug text-3xl font-bold text-default-950 capitalize mb-5">We Offer
+                            <h1 class="lg:text-6xl/normal md:text-5xl/snug text-3xl font-bold text-white text-default-950 capitalize mb-5">We Offer
                                 <span class="inline-flex relative">
                                     <span className='ml-3' >Delicious</span>
                                     <img src="/circle-line.png" class="absolute -z-10 h-full w-full lg:flex hidden"/>
                                 </span>
-                                <span class="text-emerald-800">Food</span> And Quick Service
+                                <span class="text-emerald-500">Food</span> And Quick Service
                             </h1>
-                            <p class="text-lg text-default-700 font-medium mb-8 md:max-w-md lg:mx-0 mx-auto">Imagine you don’t need a diet because we provide healthy and delicious food for you!.</p>
+                            <p class="text-lg text-default-700 text-black font-medium mb-8 md:max-w-md lg:mx-0 mx-auto">Imagine you don’t need a diet because we provide healthy and delicious food for you!.</p>
                             <div class="flex flex-wrap items-center justify-center  gap-5 mt-10">
        <a href='/allarenechef' >                
 <button
